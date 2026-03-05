@@ -4,6 +4,8 @@
   "singleQuote": true,
   "bracketSameLine": true,
   "trailingComma": "es5",
+  "semi": true,
+  "endOfLine": "auto",
   "plugins": ["prettier-plugin-tailwindcss"],
   "tailwindFunctions": ["cva"]
 }
