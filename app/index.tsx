@@ -1,16 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
-import { Link, Stack } from 'expo-router';
-import { MoonStarIcon, StarIcon, SunIcon } from 'lucide-react-native';
+import { useStickersStore } from '@/stores/stickers-store';
+import { Stack } from 'expo-router';
+import { MoonStarIcon, SunIcon } from 'lucide-react-native';
 import * as React from 'react';
-import { Image, type ImageStyle, View } from 'react-native';
+import { View } from 'react-native';
 import { Uniwind, useUniwind } from 'uniwind';
-
-const LOGO = {
-  light: require('@/assets/images/react-native-reusables-light.png'),
-  dark: require('@/assets/images/react-native-reusables-dark.png'),
-};
 
 const SCREEN_OPTIONS = {
   title: 'React Native Reusables',
@@ -18,20 +14,27 @@ const SCREEN_OPTIONS = {
   headerRight: () => <ThemeToggle />,
 };
 
-const IMAGE_STYLE: ImageStyle = {
-  height: 76,
-  width: 76,
-};
-
 export default function Screen() {
-  const { theme } = useUniwind();
+  const { stickers, isLoading } = useStickersStore((state) => state);
+
+  if (isLoading) {
+    return (
+      <>
+        <Stack.Screen options={SCREEN_OPTIONS} />
+        <View className="flex-1 items-center justify-center gap-8 p-4">
+          <Text>Loading...</Text>
+        </View>
+      </>
+    );
+  }
 
   return (
     <>
       <Stack.Screen options={SCREEN_OPTIONS} />
       <View className="flex-1 items-center justify-center gap-8 p-4">
-    
-
+        {stickers.map((sticker) => {
+          return <Text key={sticker.code}>{sticker.name}</Text>;
+        })}
       </View>
     </>
   );
