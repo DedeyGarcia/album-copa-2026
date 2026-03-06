@@ -157,8 +157,6 @@ export function CountryFilter({
             <View className="mt-2 flex-1">
               <FlashList
                 data={listData}
-                //@ts-ignore
-                estimatedItemSize={65}
                 keyboardShouldPersistTaps="handled"
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (

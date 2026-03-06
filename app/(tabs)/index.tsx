@@ -21,7 +21,6 @@ export default function AlbumScreen() {
   const { userStickers } = useUserStickersStore();
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlashListRef<ListItem>>(null);
-  const isFirstRender = useRef(true);
 
   const ownedStickers = useMemo(() => {
     return new Set(userStickers.map((s) => s.sticker_code));
@@ -91,17 +90,12 @@ export default function AlbumScreen() {
   }, []);
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-
-    const timeout = setTimeout(() => {
-      listRef.current?.scrollToOffset({ offset: 0, animated: true });
-    }, 100);
-
-    return () => clearTimeout(timeout);
+    listRef.current?.scrollToTop({ animated: true });
   }, [selectedSection, filterBy]);
+
+  useEffect(() => {
+    listRef.current?.recomputeViewableItems();
+  }, []);
 
   return (
     <View style={{ paddingTop: insets.top }} className="bg-background flex-1">
@@ -117,8 +111,6 @@ export default function AlbumScreen() {
       <FlashList
         ref={listRef}
         data={listData}
-        // @ts-ignore
-        estimatedItemSize={120}
         getItemType={(item) => item.type}
         contentContainerStyle={{
           paddingHorizontal: 16,
