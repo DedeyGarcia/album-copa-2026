@@ -1,5 +1,6 @@
 import '@/global.css';
 
+import { Appearance } from 'react-native';
 import { NAV_THEME } from '@/lib/theme';
 import { useStickersStore } from '@/stores/stickers-store';
 import { ThemeProvider } from '@react-navigation/native';
@@ -7,9 +8,9 @@ import { PortalHost } from '@rn-primitives/portal';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
-import { useUniwind } from 'uniwind';
 import { useAuthStore } from '@/stores/auth-store';
 import { supabase } from '@/lib/supabase/supabase';
+import { useThemeStore } from '@/stores/theme-store';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -18,11 +19,15 @@ export {
 
 export default function RootLayout() {
   const { fetchStickers } = useStickersStore((state) => state);
-  const { theme } = useUniwind();
+  const { theme } = useThemeStore();
   const segments = useSegments();
   const router = useRouter();
 
   const { session, isLoadingAuth, setSession } = useAuthStore();
+
+  useEffect(() => {
+    Appearance.setColorScheme(theme);
+  }, [theme]);
 
   useEffect(() => {
     fetchStickers();
@@ -38,6 +43,7 @@ export default function RootLayout() {
     } else if (session && inAuthGroup) {
       router.replace('/(tabs)');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, isLoadingAuth, segments]);
 
   useEffect(() => {
@@ -48,7 +54,6 @@ export default function RootLayout() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log({ session });
       setSession(session);
     });
 

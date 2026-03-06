@@ -16,24 +16,38 @@
 @layer theme {
   :root {
     @variant light {
+      /* Fundo Branco e Texto Azul Escuro (FIFA) */
       --color-background: oklch(1 0 0);
-      --color-foreground: oklch(0.145 0 0);
+      --color-foreground: oklch(0 0 0);
+
       --color-card: oklch(1 0 0);
-      --color-card-foreground: oklch(0.145 0 0);
+      --color-card-foreground: oklch(0.28 0.14 270);
       --color-popover: oklch(1 0 0);
-      --color-popover-foreground: oklch(0.145 0 0);
-      --color-primary: oklch(0.205 0 0);
-      --color-primary-foreground: oklch(0.985 0 0);
-      --color-secondary: oklch(0.97 0 0);
-      --color-secondary-foreground: oklch(0.205 0 0);
-      --color-muted: oklch(0.97 0 0);
-      --color-muted-foreground: oklch(0.556 0 0);
-      --color-accent: oklch(0.97 0 0);
-      --color-accent-foreground: oklch(0.205 0 0);
-      --color-destructive: oklch(0.577 0.245 27.325);
-      --color-border: oklch(0.922 0 0);
-      --color-input: oklch(0.922 0 0);
-      --color-ring: oklch(0.708 0 0);
+      --color-popover-foreground: oklch(0.28 0.14 270);
+
+      /* Azul Royal FIFA (#1E5CFF) */
+      --color-primary: oklch(0.55 0.24 260);
+      --color-primary-foreground: oklch(1 0 0);
+
+      /* Roxo Vibrante FIFA (#611CFF) */
+      --color-secondary: oklch(0.48 0.28 290);
+      --color-secondary-foreground: oklch(1 0 0);
+
+      --color-muted: oklch(0.96 0 0);
+      --color-muted-foreground: oklch(0.55 0 0);
+
+      /* Verde Limão (#A1FF00) para Accent */
+      --color-accent: oklch(0.88 0.25 130);
+      --color-accent-foreground: oklch(0.28 0.14 270);
+
+      /* Vermelho FIFA (#E60000) */
+      --color-destructive: oklch(0.55 0.23 29);
+
+      --color-border: oklch(0.92 0 0);
+      --color-input: oklch(0.92 0 0);
+      --color-ring: oklch(0.48 0.28 290); /* Anel de foco roxo */
+
+      /* Cores mantidas para charts e sidebars para não quebrar componentes não visuais */
       --color-chart-1: oklch(0.646 0.222 41.116);
       --color-chart-2: oklch(0.6 0.118 184.704);
       --color-chart-3: oklch(0.398 0.07 227.392);
@@ -50,24 +64,36 @@
     }
 
     @variant dark {
-      --color-background: oklch(0.145 0 0);
-      --color-foreground: oklch(0.985 0 0);
-      --color-card: oklch(0.205 0 0);
-      --color-card-foreground: oklch(0.985 0 0);
-      --color-popover: oklch(0.205 0 0);
-      --color-popover-foreground: oklch(0.985 0 0);
-      --color-primary: oklch(0.922 0 0);
-      --color-primary-foreground: oklch(0.205 0 0);
-      --color-secondary: oklch(0.269 0 0);
-      --color-secondary-foreground: oklch(0.985 0 0);
-      --color-muted: oklch(0.269 0 0);
-      --color-muted-foreground: oklch(0.708 0 0);
-      --color-accent: oklch(0.269 0 0);
-      --color-accent-foreground: oklch(0.985 0 0);
-      --color-destructive: oklch(0.704 0.191 22.216);
-      --color-border: oklch(1 0 0 / 10%);
-      --color-input: oklch(1 0 0 / 15%);
-      --color-ring: oklch(0.556 0 0);
+      /* Fundo Azul Escuro FIFA e texto branco */
+      --color-background: oklch(0.28 0.14 270);
+      --color-foreground: oklch(1 0 0);
+
+      --color-card: oklch(0.35 0.12 270); /* Um tom um pouco mais claro do azul para cards */
+      --color-card-foreground: oklch(1 0 0);
+      --color-popover: oklch(0.35 0.12 270);
+      --color-popover-foreground: oklch(1 0 0);
+
+      /* No Dark Mode, usamos o Ciano/Menta (#54FFCC) como primário para dar contraste */
+      --color-primary: oklch(0.88 0.15 170);
+      --color-primary-foreground: oklch(0.28 0.14 270);
+
+      /* O Roxo Vibrante vira secundário */
+      --color-secondary: oklch(0.48 0.28 290);
+      --color-secondary-foreground: oklch(1 0 0);
+
+      --color-muted: oklch(0.35 0.08 270);
+      --color-muted-foreground: oklch(0.7 0 0);
+
+      --color-accent: oklch(0.55 0.24 260);
+      --color-accent-foreground: oklch(1 0 0);
+
+      --color-destructive: oklch(0.55 0.23 29);
+
+      --color-border: oklch(1 0 0 / 15%);
+      --color-input: oklch(1 0 0 / 20%);
+      --color-ring: oklch(0.88 0.15 170); /* Foco Ciano */
+
+      /* Cores de charts e sidebars mantidas da estrutura original */
       --color-chart-1: oklch(0.488 0.243 264.376);
       --color-chart-2: oklch(0.696 0.17 162.48);
       --color-chart-3: oklch(0.769 0.188 70.08);

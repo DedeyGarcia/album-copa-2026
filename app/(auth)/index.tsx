@@ -1,4 +1,4 @@
-import { View, Alert } from 'react-native';
+import { View, Alert, Image } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
 import { supabase } from '@/lib/supabase/supabase';
@@ -46,10 +46,18 @@ export default function LoginScreen() {
   };
 
   return (
-    <View className="flex-1 items-center justify-center bg-slate-100 p-4">
-      <Text className="mb-8 text-2xl font-bold text-black">Meu Álbum de Figurinhas</Text>
-      <Button onPress={handleGoogleLogin}>
-        <Text>Entrar com Google</Text>
+    <View className="flex-1 items-center justify-center bg-white p-8">
+      <View className="mb-12 items-center">
+        <Image
+          source={require('@/assets/images/logo-fifa.webp')}
+          className="mb-6 h-48 w-48"
+          resizeMode="contain"
+        />
+        <Text className="text-center text-3xl font-bold">Álbum Copa</Text>
+        <Text className="mt-2 text-center text-gray-500">Complete sua coleção de figurinhas</Text>
+      </View>
+      <Button onPress={handleGoogleLogin} className="w-full">
+        <Text className="font-semibold">Entrar com Google</Text>
       </Button>
     </View>
   );
