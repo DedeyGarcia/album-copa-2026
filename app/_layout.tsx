@@ -11,6 +11,7 @@ import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/auth-store';
 import { supabase } from '@/lib/supabase/supabase';
 import { useThemeStore } from '@/stores/theme-store';
+import { useUserStickersStore } from '@/stores/user-stickers-store';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -19,6 +20,7 @@ export {
 
 export default function RootLayout() {
   const { fetchStickers } = useStickersStore((state) => state);
+  const { fetchUserStickers } = useUserStickersStore((state) => state);
   const { theme } = useThemeStore();
   const segments = useSegments();
   const router = useRouter();
@@ -55,9 +57,11 @@ export default function RootLayout() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      if (session) fetchUserStickers();
     });
 
     return () => subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

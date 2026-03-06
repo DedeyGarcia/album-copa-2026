@@ -6,17 +6,39 @@ import { Text } from '@/components/ui/text';
 import { Card } from '@/components/ui/card';
 import { useStickersStore } from '@/stores/stickers-store';
 import { Sticker } from '@/types';
+import { AlbumProgress } from '@/components/shared/album-progress';
+import { CountryFilter } from '@/components/shared/country-filter';
+import { useStickerFiltersStore } from '@/stores/stickers-filters-store';
+import { StatusFilter } from '@/components/shared/status-filter';
+import { useUserStickersStore } from '@/stores/user-stickers-store';
 
 type ListItem = { type: 'header'; title: string } | { type: 'row'; data: Sticker[] };
 
 export default function AlbumScreen() {
   const { stickers } = useStickersStore();
+  const { selectedSection, setSelectedSection, filterBy } = useStickerFiltersStore();
+  const { userStickers } = useUserStickersStore();
   const insets = useSafeAreaInsets();
+
+  const ownedStickers = useMemo(() => {
+    return new Set(userStickers.map((s) => s.sticker_code));
+  }, [userStickers]);
 
   const listData = useMemo(() => {
     if (!stickers || stickers.length === 0) return [];
 
-    const sorted = [...stickers].sort((a, b) => a.album_index - b.album_index);
+    const filteredStickers = stickers.filter((sticker) => {
+      const matchesSection = !selectedSection || sticker.section === selectedSection;
+
+      const isOwned = ownedStickers.has(sticker.code);
+      let matchesStatus = true;
+      if (filterBy === 'owned') matchesStatus = isOwned;
+      if (filterBy === 'missing') matchesStatus = !isOwned;
+
+      return matchesSection && matchesStatus;
+    });
+
+    const sorted = [...filteredStickers].sort((a, b) => a.album_index - b.album_index);
 
     const grouped = sorted.reduce(
       (acc, sticker) => {
@@ -41,7 +63,7 @@ export default function AlbumScreen() {
     });
 
     return flattened;
-  }, [stickers]);
+  }, [stickers, selectedSection, filterBy, ownedStickers]);
 
   const renderItem = ({ item }: { item: ListItem }) => {
     if (item.type === 'header') {
@@ -67,6 +89,15 @@ export default function AlbumScreen() {
 
   return (
     <View className="bg-background flex-1">
+      <View style={{ paddingTop: insets.top }} className="bg-background px-4 pt-2 pb-2">
+        <AlbumProgress />
+        <CountryFilter
+          availableSections={Array.from(new Set(stickers?.map((s) => s.section) || []))}
+          selectedSection={selectedSection}
+          onSelect={setSelectedSection}
+        />
+        <StatusFilter />
+      </View>
       <FlashList
         data={listData}
         // @ts-ignore
@@ -75,7 +106,7 @@ export default function AlbumScreen() {
         contentContainerStyle={{
           paddingHorizontal: 16,
           paddingBottom: 100,
-          paddingTop: insets.top + 16,
+          paddingTop: insets.top + 8,
         }}
         keyExtractor={(item, index) =>
           item.type === 'header' ? `header-${item.title}` : `row-${item.data[0].code}`
