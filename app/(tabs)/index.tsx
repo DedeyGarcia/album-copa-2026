@@ -41,8 +41,8 @@ const AlbumScreen = () => {
     const filteredStickers = stickers.filter((sticker) => {
       const matchesSection = !selectedSection || sticker.section === selectedSection;
 
-      const quantity = ownedStickers.get(sticker.code) || 0;
-      const isOwned = quantity > 0;
+      const ownedQuantity = ownedStickers.get(sticker.code) || 0;
+      const isOwned = ownedQuantity > 0;
       let matchesStatus = true;
       if (filterBy === 'owned') matchesStatus = isOwned;
       if (filterBy === 'missing') matchesStatus = !isOwned;
