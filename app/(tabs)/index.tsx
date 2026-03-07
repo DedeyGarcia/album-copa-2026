@@ -15,7 +15,7 @@ type ListItem = { type: 'header'; title: string } | { type: 'row'; data: Sticker
 
 const AlbumScreen = () => {
   const { stickers } = useStickersStore();
-  const { selectedSection, filterBy } = useStickerFiltersStore();
+  const { selectedSection, filterBy, searchQuery } = useStickerFiltersStore();
   const { userStickers } = useUserStickersStore();
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlashListRef<ListItem>>(null);
@@ -27,6 +27,8 @@ const AlbumScreen = () => {
   const listData = useMemo(() => {
     if (!stickers || stickers.length === 0) return [];
 
+    const lowerQuery = searchQuery?.toLowerCase() || '';
+
     const filteredStickers = stickers.filter((sticker) => {
       const matchesSection = !selectedSection || sticker.section === selectedSection;
 
@@ -35,7 +37,14 @@ const AlbumScreen = () => {
       if (filterBy === 'owned') matchesStatus = isOwned;
       if (filterBy === 'missing') matchesStatus = !isOwned;
 
-      return matchesSection && matchesStatus;
+      let matchesSearch = true;
+      if (lowerQuery) {
+        matchesSearch =
+          sticker.code.toLowerCase().includes(lowerQuery) ||
+          (sticker.name ? sticker.name.toLowerCase().includes(lowerQuery) : false);
+      }
+
+      return matchesSection && matchesStatus && matchesSearch;
     });
 
     const sorted = [...filteredStickers].sort((a, b) => a.album_index - b.album_index);
@@ -63,7 +72,7 @@ const AlbumScreen = () => {
     });
 
     return flattened;
-  }, [stickers, selectedSection, filterBy, ownedStickers]);
+  }, [stickers, selectedSection, filterBy, ownedStickers, searchQuery]);
 
   const renderItem = useCallback(({ item }: { item: ListItem }) => {
     if (item.type === 'header') {
@@ -89,7 +98,7 @@ const AlbumScreen = () => {
 
   useEffect(() => {
     listRef.current?.scrollToTop({ animated: true });
-  }, [selectedSection, filterBy]);
+  }, [selectedSection, filterBy, searchQuery]);
 
   return (
     <View style={{ paddingTop: insets.top }} className="bg-background flex-1">
