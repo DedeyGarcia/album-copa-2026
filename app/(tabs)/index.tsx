@@ -93,10 +93,6 @@ export default function AlbumScreen() {
     listRef.current?.scrollToTop({ animated: true });
   }, [selectedSection, filterBy]);
 
-  useEffect(() => {
-    listRef.current?.recomputeViewableItems();
-  }, []);
-
   return (
     <View style={{ paddingTop: insets.top }} className="bg-background flex-1">
       <View className="bg-background border-border/50 border-b px-4 pt-2 pb-2">
@@ -108,21 +104,23 @@ export default function AlbumScreen() {
         />
         <StatusFilter />
       </View>
-      <FlashList
-        ref={listRef}
-        data={listData}
-        getItemType={(item) => item.type}
-        contentContainerStyle={{
-          paddingHorizontal: 16,
-          paddingBottom: 100,
-          paddingTop: 0,
-        }}
-        keyExtractor={(item) =>
-          item.type === 'header' ? `header-${item.title}` : `row-${item.data[0].code}`
-        }
-        renderItem={renderItem}
-        ListEmptyComponent={EmptyState}
-      />
+      <View className="flex-1">
+        <FlashList
+          ref={listRef}
+          data={listData}
+          getItemType={(item) => item.type}
+          contentContainerStyle={{
+            paddingHorizontal: 16,
+            paddingBottom: 100,
+            paddingTop: 0,
+          }}
+          keyExtractor={(item) =>
+            item.type === 'header' ? `header-${item.title}` : `row-${item.data[0].code}`
+          }
+          renderItem={renderItem}
+          ListEmptyComponent={EmptyState}
+        />
+      </View>
     </View>
   );
 }

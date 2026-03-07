@@ -14,7 +14,7 @@ type StickerFiltersActions = {
 
 export const useStickerFiltersStore = create<StickerFiltersState & StickerFiltersActions>(
   (set) => ({
-    selectedSection: 'Especiais',
+    selectedSection: null,
     filterBy: 'all',
     setSelectedSection: (section) => set({ selectedSection: section }),
     setFilterBy: (filter) => set({ filterBy: filter }),
