@@ -21,7 +21,9 @@ const AlbumScreen = () => {
   const { selectedSection, filterBy, searchQuery } = useStickerFiltersStore();
   const { userStickers, isLoading: isLoadingUserStickers } = useUserStickersStore();
 
-  const isLoading = isLoadingStickers || isLoadingUserStickers;
+  // Só mostra tela de carregamento inteira se não tivermos os dados ainda
+  const isInitialLoad = (isLoadingStickers || isLoadingUserStickers) && (!stickers || stickers.length === 0);
+  
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlashListRef<ListItem>>(null);
 
@@ -107,15 +109,25 @@ const AlbumScreen = () => {
     );
   }, [ownedStickers]);
 
+  const prevFilters = useRef({ selectedSection, filterBy, searchQuery });
+
   useEffect(() => {
-    listRef.current?.scrollToTop({ animated: true });
+    const hasFiltersChanged =
+      prevFilters.current.selectedSection !== selectedSection ||
+      prevFilters.current.filterBy !== filterBy ||
+      prevFilters.current.searchQuery !== searchQuery;
+
+    if (hasFiltersChanged) {
+      listRef.current?.scrollToTop({ animated: true });
+      prevFilters.current = { selectedSection, filterBy, searchQuery };
+    }
   }, [selectedSection, filterBy, searchQuery]);
 
   return (
     <View style={{ paddingTop: insets.top }} className="bg-background flex-1">
       <AlbumScreenHeader />
       <View className="flex-1">
-        {isLoading ? (
+        {isInitialLoad ? (
           <LoadingState />
         ) : (
           <FlashList

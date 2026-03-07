@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Modal, View, TouchableOpacity, Pressable, Text } from 'react-native';
 import { Input } from '@/components/ui/input';
-import { ChevronDown, Search, X } from 'lucide-react-native';
+import { Search, X, Menu } from 'lucide-react-native';
 import { FlashList } from '@shopify/flash-list/dist/FlashList';
 
 const SECTION_MAP: Record<string, { icon: string }> = {
@@ -105,14 +105,14 @@ const CountryFilter = ({
 
   return (
     <View>
-      <Pressable
+      <TouchableOpacity
         onPress={() => setIsOpen(true)}
-        className="bg-card border-border flex-row items-center justify-between rounded-md border px-4 py-3">
-        <Text className="text-foreground text-base font-medium">
-          {selectedItem ? `${selectedItem.flag} ${selectedItem.name}` : '🌎 Todas as Seções'}
-        </Text>
-        <ChevronDown className="text-muted-foreground" size={20} />
-      </Pressable>
+        className="bg-muted relative items-center justify-center rounded-md p-2">
+        <Menu className="text-foreground" size={20} />
+        {selectedSection && (
+          <View className="bg-primary absolute top-1.5 right-1.5 h-2 w-2 rounded-full" />
+        )}
+      </TouchableOpacity>
 
       <Modal
         visible={isOpen}
