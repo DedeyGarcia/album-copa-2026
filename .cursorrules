@@ -21,6 +21,7 @@
 - **Hooks**: Use hooks personalizados para separar lógica de renderização quando necessário.
 - **Tailwind**: Use classes do Tailwind diretamente na prop `className`. Evite `StyleSheet.create`.
 - **Zustand**: Siga o padrão de hooks para acessar as stores (Ex: `useAuthStore`).
+- **Comentários**: Não coloque comentários desnecessários ou óbvios (Ex: `// fetch data`). Use comentários apenas para explicar lógicas complexas ou decisões não óbvias. Preferimos código limpo e autoexplicativo.
 
 
 ## Preferências de Resposta

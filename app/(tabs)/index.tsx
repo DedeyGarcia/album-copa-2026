@@ -10,18 +10,27 @@ import { useStickerFiltersStore } from '@/stores/stickers-filters-store';
 import { useUserStickersStore } from '@/stores/user-stickers-store';
 import EmptyState from '@/components/shared/album-screen/empty-state';
 import AlbumScreenHeader from '@/components/shared/album-screen/header';
+import StickerCard from '@/components/shared/sticker-card';
+import ManageStickerModal from '@/components/shared/manage-sticker-modal';
+import LoadingState from '@/components/shared/album-screen/loading-state';
 
 type ListItem = { type: 'header'; title: string } | { type: 'row'; data: Sticker[] };
 
 const AlbumScreen = () => {
-  const { stickers } = useStickersStore();
+  const { stickers, isLoading: isLoadingStickers } = useStickersStore();
   const { selectedSection, filterBy, searchQuery } = useStickerFiltersStore();
-  const { userStickers } = useUserStickersStore();
+  const { userStickers, isLoading: isLoadingUserStickers } = useUserStickersStore();
+
+  const isLoading = isLoadingStickers || isLoadingUserStickers;
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlashListRef<ListItem>>(null);
 
   const ownedStickers = useMemo(() => {
-    return new Set(userStickers.map((s) => s.sticker_code));
+    const map = new Map<string, number>();
+    userStickers.forEach((s) => {
+       map.set(s.sticker_code, s.quantity);
+    });
+    return map;
   }, [userStickers]);
 
   const listData = useMemo(() => {
@@ -32,7 +41,8 @@ const AlbumScreen = () => {
     const filteredStickers = stickers.filter((sticker) => {
       const matchesSection = !selectedSection || sticker.section === selectedSection;
 
-      const isOwned = ownedStickers.has(sticker.code);
+      const quantity = ownedStickers.get(sticker.code) || 0;
+      const isOwned = quantity > 0;
       let matchesStatus = true;
       if (filterBy === 'owned') matchesStatus = isOwned;
       if (filterBy === 'missing') matchesStatus = !isOwned;
@@ -82,11 +92,12 @@ const AlbumScreen = () => {
     return (
       <View className="flex-row">
         {item.data.map((sticker) => (
-          <View key={sticker.code} className="w-1/4 p-1">
-            <Card className={`bg-card aspect-[3/4] items-center justify-center shadow-sm`}>
-              <Text className="text-card-foreground font-bold">{sticker.code}</Text>
-            </Card>
-          </View>
+          <StickerCard 
+            key={sticker.code} 
+            sticker={sticker} 
+            quantity={ownedStickers.get(sticker.code) || 0} 
+            showDuplicatesQuantity={false}
+          />
         ))}
 
         {Array.from({ length: 4 - item.data.length }).map((_, idx) => (
@@ -94,7 +105,7 @@ const AlbumScreen = () => {
         ))}
       </View>
     );
-  }, []);
+  }, [ownedStickers]);
 
   useEffect(() => {
     listRef.current?.scrollToTop({ animated: true });
@@ -104,22 +115,28 @@ const AlbumScreen = () => {
     <View style={{ paddingTop: insets.top }} className="bg-background flex-1">
       <AlbumScreenHeader />
       <View className="flex-1">
-        <FlashList
-          ref={listRef}
-          data={listData}
-          getItemType={(item) => item.type}
-          contentContainerStyle={{
-            paddingHorizontal: 16,
-            paddingBottom: 100,
-            paddingTop: 0,
-          }}
-          keyExtractor={(item) =>
-            item.type === 'header' ? `header-${item.title}` : `row-${item.data[0].code}`
-          }
-          renderItem={renderItem}
-          ListEmptyComponent={EmptyState}
-        />
+        {isLoading ? (
+          <LoadingState />
+        ) : (
+          <FlashList
+            ref={listRef}
+            data={listData}
+            extraData={ownedStickers}
+            getItemType={(item) => item.type}
+            contentContainerStyle={{
+              paddingHorizontal: 16,
+              paddingBottom: 100,
+              paddingTop: 0,
+            }}
+            keyExtractor={(item) =>
+              item.type === 'header' ? `header-${item.title}` : `row-${item.data[0].code}`
+            }
+            renderItem={renderItem}
+            ListEmptyComponent={EmptyState}
+          />
+        )}
       </View>
+      <ManageStickerModal />
     </View>
   );
 };
