@@ -4,7 +4,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Text } from '@/components/ui/text';
 import { FilterByOptions, useStickerFiltersStore } from '@/stores/stickers-filters-store';
 
-export function StatusFilter() {
+const StatusFilter = () => {
   const { filterBy, setFilterBy } = useStickerFiltersStore();
 
   return (
@@ -30,4 +30,6 @@ export function StatusFilter() {
       </ToggleGroup>
     </View>
   );
-}
+};
+
+export default StatusFilter;

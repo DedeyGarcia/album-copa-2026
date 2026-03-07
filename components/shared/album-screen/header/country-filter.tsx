@@ -75,11 +75,11 @@ interface CountryFilterProps {
   onSelect: (section: string | null) => void;
 }
 
-export function CountryFilter({
+const CountryFilter = ({
   availableSections,
   selectedSection,
   onSelect,
-}: CountryFilterProps) {
+}: CountryFilterProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -181,4 +181,6 @@ export function CountryFilter({
       </Modal>
     </View>
   );
-}
+};
+
+export default CountryFilter;

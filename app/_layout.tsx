@@ -18,7 +18,7 @@ export {
   ErrorBoundary,
 } from 'expo-router';
 
-export default function RootLayout() {
+const RootLayout = () => {
   const { fetchStickers } = useStickersStore((state) => state);
   const { fetchUserStickers } = useUserStickersStore((state) => state);
   const { theme } = useThemeStore();
@@ -74,4 +74,6 @@ export default function RootLayout() {
       <PortalHost />
     </ThemeProvider>
   );
-}
+};
+
+export default RootLayout;

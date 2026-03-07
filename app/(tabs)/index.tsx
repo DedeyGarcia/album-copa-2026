@@ -8,12 +8,12 @@ import { useStickersStore } from '@/stores/stickers-store';
 import { Sticker } from '@/types';
 import { useStickerFiltersStore } from '@/stores/stickers-filters-store';
 import { useUserStickersStore } from '@/stores/user-stickers-store';
-import EmptyState from '@/components/shared/album-screen/header/empty-state';
+import EmptyState from '@/components/shared/album-screen/empty-state';
 import AlbumScreenHeader from '@/components/shared/album-screen/header';
 
 type ListItem = { type: 'header'; title: string } | { type: 'row'; data: Sticker[] };
 
-export default function AlbumScreen() {
+const AlbumScreen = () => {
   const { stickers } = useStickersStore();
   const { selectedSection, filterBy } = useStickerFiltersStore();
   const { userStickers } = useUserStickersStore();
@@ -113,4 +113,6 @@ export default function AlbumScreen() {
       </View>
     </View>
   );
-}
+};
+
+export default AlbumScreen;

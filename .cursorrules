@@ -1,0 +1,34 @@
+# Álbum Copa 2026 - Guia de Estilo para IA
+
+## Stack Tecnológico
+- **Framework**: Expo (React Native) com Expo Router (File-based routing).
+- **Linguagem**: TypeScript (Strict mode).
+- **Estilização**: Uniwind / Tailwind CSS 4.
+- **Banco de Dados/Auth**: Supabase.
+- **Estado Global**: Zustand (armazenado em `/stores`).
+- **Ícones**: Lucide-react-native.
+- **Componentes Base**: @react-native-reusables.
+
+## Regras de Estrutura de Arquivos
+- **Rotas**: Todos os arquivos de tela devem estar em `/app`.
+- **Componentes Base**: Caso precise de um componente base novo do @react-native-reusables, **estou autorizado a rodar o script de instalação (`npx @react-native-reusables...`) automaticamente**.
+- **Componentes**: Componentes reutilizáveis em `/components`. Use PascalCase para nomes de arquivos (Ex: `Button.tsx`).
+- **Lógica/Utilidades**: Funções auxiliares em `/lib`.
+- **Tipos**: Definições globais em `/types`.
+
+## Padrões de Código
+- **Componentes**: **SEMPRE** use Arrow Functions declarando com `const Name = () => { ... }` e adicione o `export default Name;` (ou `export { Name };`) apenas no **final do arquivo**. Evite a sintaxe clássica de `function` e evite colocar o export na mesma linha da declaração.
+- **Hooks**: Use hooks personalizados para separar lógica de renderização quando necessário.
+- **Tailwind**: Use classes do Tailwind diretamente na prop `className`. Evite `StyleSheet.create`.
+- **Zustand**: Siga o padrão de hooks para acessar as stores (Ex: `useAuthStore`).
+
+
+## Preferências de Resposta
+- **Idioma**: Responda sempre em **Português**.
+- **Código**: Escreva nomes de variáveis, funções e comentários de código em **Inglês**.
+- **Explicação**: Seja conciso, mas mostre exemplos de código práticos.
+- **Segurança**: Nunca exponha chaves do Supabase ou variáveis do `.env` nos exemplos.
+
+## Comandos Úteis
+- Iniciar Dev: `npm run dev`
+- Limpar Cache: `npm run clean`

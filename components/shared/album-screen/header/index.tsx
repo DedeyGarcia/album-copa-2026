@@ -1,11 +1,11 @@
 import { View } from 'react-native';
 import { useStickersStore } from '@/stores/stickers-store';
-import { AlbumProgress } from '@/components/shared/album-screen/header/album-progress';
-import { CountryFilter } from '@/components/shared/album-screen/header/country-filter';
 import { useStickerFiltersStore } from '@/stores/stickers-filters-store';
-import { StatusFilter } from '@/components/shared/album-screen/header/status-filter';
+import AlbumProgress from './album-progress';
+import CountryFilter from './country-filter';
+import StatusFilter from './status-filter';
 
-export default function AlbumScreenHeader() {
+const AlbumScreenHeader = () => {
   const { stickers } = useStickersStore();
   const { selectedSection, setSelectedSection } = useStickerFiltersStore();
 
@@ -20,4 +20,6 @@ export default function AlbumScreenHeader() {
       <StatusFilter />
     </View>
   );
-}
+};
+
+export default AlbumScreenHeader;

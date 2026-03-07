@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import { LayoutDashboard, UserCircle } from 'lucide-react-native'; // Ou seus ícones de preferência
 
-export default function TabLayout() {
+const TabLayout = () => {
   return (
     <Tabs screenOptions={{ headerShown: false }}>
       <Tabs.Screen
@@ -20,4 +20,6 @@ export default function TabLayout() {
       />
     </Tabs>
   );
-}
+};
+
+export default TabLayout;

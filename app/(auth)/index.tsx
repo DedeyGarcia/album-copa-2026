@@ -7,7 +7,7 @@ import { Text } from '@/components/ui/text';
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function LoginScreen() {
+const LoginScreen = () => {
   const handleGoogleLogin = async () => {
     try {
       const redirectUrl = Linking.createURL('/');
@@ -61,4 +61,6 @@ export default function LoginScreen() {
       </Button>
     </View>
   );
-}
+};
+
+export default LoginScreen;

@@ -5,7 +5,7 @@ import { useUserStickersStore } from '@/stores/user-stickers-store';
 import { useStickersStore } from '@/stores/stickers-store';
 import { useMemo } from 'react';
 
-export function AlbumProgress() {
+const AlbumProgress = () => {
   const { userStickers, isLoading: isLoadingUserStickers } = useUserStickersStore((state) => state);
   const { stickers, isLoading: isLoadingStickers } = useStickersStore((state) => state);
 
@@ -50,4 +50,6 @@ export function AlbumProgress() {
       </View>
     </Card>
   );
-}
+};
+
+export default AlbumProgress;
