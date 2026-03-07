@@ -6,18 +6,16 @@ import { Text } from '@/components/ui/text';
 import { Card } from '@/components/ui/card';
 import { useStickersStore } from '@/stores/stickers-store';
 import { Sticker } from '@/types';
-import { AlbumProgress } from '@/components/shared/album-screen/album-progress';
-import { CountryFilter } from '@/components/shared/album-screen/country-filter';
 import { useStickerFiltersStore } from '@/stores/stickers-filters-store';
-import { StatusFilter } from '@/components/shared/album-screen/status-filter';
 import { useUserStickersStore } from '@/stores/user-stickers-store';
-import EmptyState from '@/components/shared/album-screen/empty-state';
+import EmptyState from '@/components/shared/album-screen/header/empty-state';
+import AlbumScreenHeader from '@/components/shared/album-screen/header';
 
 type ListItem = { type: 'header'; title: string } | { type: 'row'; data: Sticker[] };
 
 export default function AlbumScreen() {
   const { stickers } = useStickersStore();
-  const { selectedSection, setSelectedSection, filterBy } = useStickerFiltersStore();
+  const { selectedSection, filterBy } = useStickerFiltersStore();
   const { userStickers } = useUserStickersStore();
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlashListRef<ListItem>>(null);
@@ -95,15 +93,7 @@ export default function AlbumScreen() {
 
   return (
     <View style={{ paddingTop: insets.top }} className="bg-background flex-1">
-      <View className="bg-background border-border/50 border-b px-4 pt-2 pb-2">
-        <AlbumProgress />
-        <CountryFilter
-          availableSections={Array.from(new Set(stickers?.map((s) => s.section) || []))}
-          selectedSection={selectedSection}
-          onSelect={setSelectedSection}
-        />
-        <StatusFilter />
-      </View>
+      <AlbumScreenHeader />
       <View className="flex-1">
         <FlashList
           ref={listRef}
