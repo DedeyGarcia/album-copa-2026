@@ -59,8 +59,8 @@ const AlbumScreen = () => {
           />
         ))}
 
-        {Array.from({ length: 4 - item.data.length }).map((_, idx) => (
-          <View key={`empty-${idx}`} className="w-1/4 p-1" />
+        {Array.from({ length: 5 - item.data.length }).map((_, idx) => (
+          <View key={`empty-${idx}`} className="w-1/5 p-1" />
         ))}
       </View>
     );

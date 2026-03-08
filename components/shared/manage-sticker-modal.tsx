@@ -8,6 +8,7 @@ import { Text } from '@/components/ui/text';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, X } from 'lucide-react-native';
+import StickerCard from './sticker-card';
 
 const ManageStickerModal = () => {
   const { isOpen, selectedSticker, currentQuantity, closeModal } = useManageStickerStore();
@@ -94,9 +95,10 @@ const ManageStickerModal = () => {
                <Text className="text-muted-foreground text-center mb-6">{selectedSticker.name}</Text>
             )}
 
-            <Card className="aspect-[3/4] w-24 items-center justify-center bg-primary border-primary shadow-md mb-8">
+            {/* <Card className="aspect-[3/4] w-24 items-center justify-center bg-primary border-primary shadow-md mb-8">
                <Text className="text-primary-foreground font-bold text-2xl">{selectedSticker.code}</Text>
-            </Card>
+            </Card> */}
+            <StickerCard sticker={selectedSticker} quantity={localQuantity} />
 
             <Text className="text-lg font-semibold mb-4">Quantidade:</Text>
             

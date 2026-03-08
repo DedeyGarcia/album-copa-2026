@@ -67,10 +67,10 @@ export const generateStickerListData = ({
   Object.entries(grouped).forEach(([sectionTitle, sectionStickers]) => {
     flattened.push({ type: 'header', title: sectionTitle });
 
-    for (let i = 0; i < sectionStickers.length; i += 4) {
+    for (let i = 0; i < sectionStickers.length; i += 5) {
       flattened.push({
         type: 'row',
-        data: sectionStickers.slice(i, i + 4),
+        data: sectionStickers.slice(i, i + 5),
       });
     }
   });
