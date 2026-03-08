@@ -5,6 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/ui/text';
 import { useStickersStore } from '@/stores/stickers-store';
 import { useUserStickersStore } from '@/stores/user-stickers-store';
+import { useManageStickerStore } from '@/stores/manage-sticker-store';
+import { Sticker } from '@/types';
 import LoadingState from '../_components/album/loading-state';
 import DuplicatesHeader from '../_components/duplicates/header';
 import StickerCard from '@/components/shared/sticker-card';
@@ -17,6 +19,7 @@ const DuplicatesScreen = () => {
   const { stickers, isLoading: isLoadingStickers } = useStickersStore();
   const { userStickers, isLoading: isLoadingUserStickers } = useUserStickersStore();
   const { searchQuery, selectedSection } = useDuplicatesFiltersStore();
+  const { openModal } = useManageStickerStore();
 
   const insets = useSafeAreaInsets();
   const isInitialLoad = (isLoadingStickers || isLoadingUserStickers) && (!stickers || stickers.length === 0);
@@ -39,6 +42,11 @@ const DuplicatesScreen = () => {
     });
   }, [stickers, ownedStickers, searchQuery, selectedSection]);
 
+  const handleStickerInteraction = useCallback((sticker: Sticker, quantity: number) => {
+    // Na tela de repetidas, qualquer toque abre o modal
+    openModal(sticker, quantity);
+  }, [openModal]);
+
   const renderItem = useCallback(({ item }: { item: ListItem }) => {
     if (item.type === 'header') {
       return <Text className="text-foreground mt-6 mb-2 text-2xl font-bold">{item.title}</Text>;
@@ -46,21 +54,26 @@ const DuplicatesScreen = () => {
 
     return (
       <View className="flex-row">
-        {item.data.map((sticker) => (
-          <StickerCard 
-            key={sticker.code} 
-            sticker={sticker} 
-            quantity={ownedStickers.get(sticker.code) || 0} 
-            showDuplicatesQuantity={true}
-          />
-        ))}
+        {item.data.map((sticker) => {
+          const quantity = ownedStickers.get(sticker.code) || 0;
+          return (
+            <StickerCard 
+              key={sticker.code} 
+              sticker={sticker} 
+              quantity={quantity}
+              showDuplicatesQuantity={true}
+              onPress={() => handleStickerInteraction(sticker, quantity)}
+              onLongPress={() => handleStickerInteraction(sticker, quantity)}
+            />
+          );
+        })}
 
         {Array.from({ length: 5 - item.data.length }).map((_, idx) => (
           <View key={`empty-${idx}`} className="w-1/5 p-0.5" />
         ))}
       </View>
     );
-  }, [ownedStickers]);
+  }, [ownedStickers, handleStickerInteraction]);
 
   return (
     <View style={{ paddingTop: insets.top }} className="bg-background flex-1">

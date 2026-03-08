@@ -7,6 +7,7 @@ import { useStickersStore } from '@/stores/stickers-store';
 import { Sticker } from '@/types';
 import { useStickerFiltersStore } from '@/stores/stickers-filters-store';
 import { useUserStickersStore } from '@/stores/user-stickers-store';
+import { useManageStickerStore } from '@/stores/manage-sticker-store';
 import EmptyState from '@/components/shared/empty-state';
 import AlbumScreenHeader from '../_components/album/header';
 import StickerCard from '@/components/shared/sticker-card';
@@ -17,7 +18,8 @@ import { generateStickerListData, ListItem } from '@/utils/sticker-utils';
 const AlbumScreen = () => {
   const { stickers, isLoading: isLoadingStickers } = useStickersStore();
   const { selectedSection, filterBy, searchQuery } = useStickerFiltersStore();
-  const { userStickers, isLoading: isLoadingUserStickers } = useUserStickersStore();
+  const { userStickers, isLoading: isLoadingUserStickers, upsertSticker: addSticker } = useUserStickersStore();
+  const { openModal } = useManageStickerStore();
 
   const isInitialLoad = (isLoadingStickers || isLoadingUserStickers) && (!stickers || stickers.length === 0);
   
@@ -43,6 +45,21 @@ const AlbumScreen = () => {
     });
   }, [stickers, selectedSection, filterBy, ownedStickers, searchQuery]);
 
+  const handleStickerPress = useCallback((sticker: Sticker, quantity: number) => {
+    if (quantity === 0) {
+      // Não obtida: adiciona direto com qty=1
+      addSticker(sticker.code);
+    } else {
+      // Já obtida: abre modal para gerenciar
+      openModal(sticker, quantity);
+    }
+  }, [addSticker, openModal]);
+
+  const handleStickerLongPress = useCallback((sticker: Sticker, quantity: number) => {
+    // Toque longo sempre abre o modal
+    openModal(sticker, quantity);
+  }, [openModal]);
+
   const renderItem = useCallback(({ item }: { item: ListItem }) => {
     if (item.type === 'header') {
       return <Text className="text-foreground mt-6 mb-2 text-2xl font-bold">{item.title}</Text>;
@@ -50,21 +67,26 @@ const AlbumScreen = () => {
 
     return (
       <View className="flex-row">
-        {item.data.map((sticker) => (
-          <StickerCard 
-            key={sticker.code} 
-            sticker={sticker} 
-            quantity={ownedStickers.get(sticker.code) || 0} 
-            showDuplicatesQuantity={false}
-          />
-        ))}
+        {item.data.map((sticker) => {
+          const quantity = ownedStickers.get(sticker.code) || 0;
+          return (
+            <StickerCard 
+              key={sticker.code} 
+              sticker={sticker} 
+              quantity={quantity}
+              showDuplicatesQuantity={false}
+              onPress={() => handleStickerPress(sticker, quantity)}
+              onLongPress={() => handleStickerLongPress(sticker, quantity)}
+            />
+          );
+        })}
 
         {Array.from({ length: 5 - item.data.length }).map((_, idx) => (
           <View key={`empty-${idx}`} className="w-1/5 p-1" />
         ))}
       </View>
     );
-  }, [ownedStickers]);
+  }, [ownedStickers, handleStickerPress, handleStickerLongPress]);
 
   const prevFilters = useRef({ selectedSection, filterBy, searchQuery });
 

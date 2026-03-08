@@ -3,7 +3,6 @@ import { Sticker } from '@/types';
 import { Card } from '@/components/ui/card';
 import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
-import { useManageStickerStore } from '@/stores/manage-sticker-store';
 import { Check, X } from 'lucide-react-native';
 import { SECTION_MAP } from '@/components/shared/section-filter-modal';
 
@@ -20,11 +19,11 @@ interface StickerCardProps {
   sticker: Sticker;
   quantity: number;
   showDuplicatesQuantity?: boolean;
+  onPress?: () => void;
+  onLongPress?: () => void;
 }
 
-const StickerCard = ({ sticker, quantity, showDuplicatesQuantity = true }: StickerCardProps) => {
-  const { openModal } = useManageStickerStore();
-  
+const StickerCard = ({ sticker, quantity, showDuplicatesQuantity = true, onPress, onLongPress }: StickerCardProps) => {
   const isOwned = quantity > 0;
   const isoCode = FLAG_ISO_MAP[sticker.section];
   const fallbackIcon = SECTION_MAP[sticker.section]?.icon || '🏆';
@@ -33,7 +32,9 @@ const StickerCard = ({ sticker, quantity, showDuplicatesQuantity = true }: Stick
     <View className="w-1/5 p-0.5">
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() => openModal(sticker, quantity)}
+        onPress={onPress}
+        onLongPress={onLongPress}
+        delayLongPress={350}
       >
         <Card 
           className={cn(
@@ -60,21 +61,20 @@ const StickerCard = ({ sticker, quantity, showDuplicatesQuantity = true }: Stick
                    </View>
                  )}
 
-                 {/* Código Superior Esquerdo com text shadow rústico */}
+                 {/* Código Superior Esquerdo */}
                  <View className="absolute top-0.5 left-1 z-10 rounded px-0.5 bg-black/30">
                    <Text className="text-[10px] sm:text-[11px] font-bold text-white tracking-tighter">
                      {sticker.code}
                    </Text>
                  </View>
 
-
-                 {/* Check Central azul posicionado no centro VISÍVEL da bandeira */}
+                 {/* Check Central */}
                  <View className="z-10 items-center justify-center">
                    <Check color="#3b82f6" size={28} strokeWidth={4} />
                  </View>
               </View>
 
-              {/* Badge de Repetidas — canto inferior direito, acima da barra Obtida */}
+              {/* Badge de Repetidas */}
               {quantity > 1 && showDuplicatesQuantity && (
                 <View className="absolute bottom-[20px] right-0.5 bg-primary rounded-full w-[16px] h-[16px] items-center justify-center z-20 shadow-sm border border-background">
                   <Text style={{ color: 'white' }} className="text-[8px] font-bold">
