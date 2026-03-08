@@ -8,29 +8,31 @@ import { Sticker } from '@/types';
 import { useStickerFiltersStore } from '@/stores/stickers-filters-store';
 import { useUserStickersStore } from '@/stores/user-stickers-store';
 import { useManageStickerStore } from '@/stores/manage-sticker-store';
+import { useUndoToast } from '@/hooks/use-undo-toast';
 import EmptyState from '@/components/shared/empty-state';
 import AlbumScreenHeader from '../_components/album/header';
 import StickerCard from '@/components/shared/sticker-card';
 import ManageStickerModal from '@/components/shared/manage-sticker-modal';
 import LoadingState from '../_components/album/loading-state';
+import UndoToast from '@/components/shared/undo-toast';
 import { generateStickerListData, ListItem } from '@/utils/sticker-utils';
+
+const UNDO_DURATION_MS = 4000;
 
 const AlbumScreen = () => {
   const { stickers, isLoading: isLoadingStickers } = useStickersStore();
   const { selectedSection, filterBy, searchQuery } = useStickerFiltersStore();
-  const { userStickers, isLoading: isLoadingUserStickers, upsertSticker: addSticker } = useUserStickersStore();
+  const { userStickers, isLoading: isLoadingUserStickers, optimisticAdd, optimisticRemove, commitAdd, upsertSticker } = useUserStickersStore();
   const { openModal } = useManageStickerStore();
+  const { pendingAction, show: showToast, undo, flush } = useUndoToast(UNDO_DURATION_MS);
 
   const isInitialLoad = (isLoadingStickers || isLoadingUserStickers) && (!stickers || stickers.length === 0);
-  
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlashListRef<ListItem>>(null);
 
   const ownedStickers = useMemo(() => {
     const map = new Map<string, number>();
-    userStickers.forEach((s) => {
-       map.set(s.sticker_code, s.quantity);
-    });
+    userStickers.forEach((s) => map.set(s.sticker_code, s.quantity));
     return map;
   }, [userStickers]);
 
@@ -47,18 +49,33 @@ const AlbumScreen = () => {
 
   const handleStickerPress = useCallback((sticker: Sticker, quantity: number) => {
     if (quantity === 0) {
-      // Não obtida: adiciona direto com qty=1
-      addSticker(sticker.code);
+      flush();
+      optimisticAdd(sticker.code);
+      showToast({
+        code: sticker.code,
+        variant: 'add',
+        onTimeout: () => commitAdd(sticker.code),
+        onUndo: () => optimisticRemove(sticker.code),
+      });
     } else {
-      // Já obtida: abre modal para gerenciar
+      flush();
       openModal(sticker, quantity);
     }
-  }, [addSticker, openModal]);
+  }, [flush, optimisticAdd, optimisticRemove, commitAdd, openModal, showToast]);
 
   const handleStickerLongPress = useCallback((sticker: Sticker, quantity: number) => {
-    // Toque longo sempre abre o modal
+    flush();
     openModal(sticker, quantity);
-  }, [openModal]);
+  }, [flush, openModal]);
+
+  const handleDeleteSuccess = useCallback((code: string, previousQuantity: number) => {
+    showToast({
+      code,
+      variant: 'remove',
+      onTimeout: () => {},
+      onUndo: () => upsertSticker(code, previousQuantity),
+    });
+  }, [showToast, upsertSticker]);
 
   const renderItem = useCallback(({ item }: { item: ListItem }) => {
     if (item.type === 'header') {
@@ -70,9 +87,9 @@ const AlbumScreen = () => {
         {item.data.map((sticker) => {
           const quantity = ownedStickers.get(sticker.code) || 0;
           return (
-            <StickerCard 
-              key={sticker.code} 
-              sticker={sticker} 
+            <StickerCard
+              key={sticker.code}
+              sticker={sticker}
               quantity={quantity}
               showDuplicatesQuantity={false}
               onPress={() => handleStickerPress(sticker, quantity)}
@@ -80,7 +97,6 @@ const AlbumScreen = () => {
             />
           );
         })}
-
         {Array.from({ length: 5 - item.data.length }).map((_, idx) => (
           <View key={`empty-${idx}`} className="w-1/5 p-1" />
         ))}
@@ -114,11 +130,7 @@ const AlbumScreen = () => {
             data={listData}
             extraData={ownedStickers}
             getItemType={(item) => item.type}
-            contentContainerStyle={{
-              paddingHorizontal: 16,
-              paddingBottom: 100,
-              paddingTop: 0,
-            }}
+            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100, paddingTop: 0 }}
             keyExtractor={(item) =>
               item.type === 'header' ? `header-${item.title}` : `row-${item.data[0].code}`
             }
@@ -129,7 +141,8 @@ const AlbumScreen = () => {
           />
         )}
       </View>
-      <ManageStickerModal />
+      <UndoToast action={pendingAction} onUndo={undo} durationMs={UNDO_DURATION_MS} />
+      <ManageStickerModal onDeleteSuccess={handleDeleteSuccess} />
     </View>
   );
 };

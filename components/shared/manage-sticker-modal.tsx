@@ -5,12 +5,16 @@ import { useUserStickersStore } from '@/stores/user-stickers-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { supabase } from '@/lib/supabase/supabase';
 import { Text } from '@/components/ui/text';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, X } from 'lucide-react-native';
 import StickerCard from './sticker-card';
 
-const ManageStickerModal = () => {
+interface ManageStickerModalProps {
+  /** Chamado após deletar uma figurinha com sucesso — usado para mostrar o undo toast */
+  onDeleteSuccess?: (code: string, previousQuantity: number) => void;
+}
+
+const ManageStickerModal = ({ onDeleteSuccess }: ManageStickerModalProps) => {
   const { isOpen, selectedSticker, currentQuantity, closeModal } = useManageStickerStore();
   const { fetchUserStickers } = useUserStickersStore();
   const [localQuantity, setLocalQuantity] = useState(0);
@@ -41,7 +45,10 @@ const ManageStickerModal = () => {
         throw new Error('Usuário não autenticado.');
       }
 
-      if (localQuantity === 0) {
+      const isDeleting = localQuantity === 0;
+      const previousQuantity = currentQuantity;
+
+      if (isDeleting) {
         const { error } = await supabase
           .from('user_stickers')
           .delete()
@@ -65,6 +72,11 @@ const ManageStickerModal = () => {
 
       await fetchUserStickers();
       closeModal();
+
+      // Notifica o screen pai para mostrar o undo toast de remoção
+      if (isDeleting) {
+        onDeleteSuccess?.(selectedSticker.code, previousQuantity);
+      }
     } catch (error: any) {
       Alert.alert('Erro', error.message || 'Houve um erro ao salvar a figurinha.');
     } finally {
@@ -95,9 +107,6 @@ const ManageStickerModal = () => {
                <Text className="text-muted-foreground text-center mb-6">{selectedSticker.name}</Text>
             )}
 
-            {/* <Card className="aspect-[3/4] w-24 items-center justify-center bg-primary border-primary shadow-md mb-8">
-               <Text className="text-primary-foreground font-bold text-2xl">{selectedSticker.code}</Text>
-            </Card> */}
             <StickerCard sticker={selectedSticker} quantity={localQuantity} />
 
             <Text className="text-lg font-semibold mb-4">Quantidade:</Text>

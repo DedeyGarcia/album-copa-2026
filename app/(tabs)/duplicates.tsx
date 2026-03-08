@@ -6,29 +6,32 @@ import { Text } from '@/components/ui/text';
 import { useStickersStore } from '@/stores/stickers-store';
 import { useUserStickersStore } from '@/stores/user-stickers-store';
 import { useManageStickerStore } from '@/stores/manage-sticker-store';
+import { useUndoToast } from '@/hooks/use-undo-toast';
 import { Sticker } from '@/types';
 import LoadingState from '../_components/album/loading-state';
 import DuplicatesHeader from '../_components/duplicates/header';
 import StickerCard from '@/components/shared/sticker-card';
 import ManageStickerModal from '@/components/shared/manage-sticker-modal';
+import UndoToast from '@/components/shared/undo-toast';
 import { useDuplicatesFiltersStore } from '@/stores/duplicates-filters-store';
 import EmptyState from '@/components/shared/empty-state';
 import { generateStickerListData, ListItem } from '@/utils/sticker-utils';
 
+const UNDO_DURATION_MS = 4000;
+
 const DuplicatesScreen = () => {
   const { stickers, isLoading: isLoadingStickers } = useStickersStore();
-  const { userStickers, isLoading: isLoadingUserStickers } = useUserStickersStore();
+  const { userStickers, isLoading: isLoadingUserStickers, upsertSticker } = useUserStickersStore();
   const { searchQuery, selectedSection } = useDuplicatesFiltersStore();
   const { openModal } = useManageStickerStore();
+  const { pendingAction, show: showToast, undo, flush } = useUndoToast(UNDO_DURATION_MS);
 
   const insets = useSafeAreaInsets();
   const isInitialLoad = (isLoadingStickers || isLoadingUserStickers) && (!stickers || stickers.length === 0);
 
   const ownedStickers = useMemo(() => {
     const map = new Map<string, number>();
-    userStickers.forEach((s) => {
-      map.set(s.sticker_code, s.quantity);
-    });
+    userStickers.forEach((s) => map.set(s.sticker_code, s.quantity));
     return map;
   }, [userStickers]);
 
@@ -43,9 +46,18 @@ const DuplicatesScreen = () => {
   }, [stickers, ownedStickers, searchQuery, selectedSection]);
 
   const handleStickerInteraction = useCallback((sticker: Sticker, quantity: number) => {
-    // Na tela de repetidas, qualquer toque abre o modal
+    flush();
     openModal(sticker, quantity);
-  }, [openModal]);
+  }, [flush, openModal]);
+
+  const handleDeleteSuccess = useCallback((code: string, previousQuantity: number) => {
+    showToast({
+      code,
+      variant: 'remove',
+      onTimeout: () => {},
+      onUndo: () => upsertSticker(code, previousQuantity),
+    });
+  }, [showToast, upsertSticker]);
 
   const renderItem = useCallback(({ item }: { item: ListItem }) => {
     if (item.type === 'header') {
@@ -57,9 +69,9 @@ const DuplicatesScreen = () => {
         {item.data.map((sticker) => {
           const quantity = ownedStickers.get(sticker.code) || 0;
           return (
-            <StickerCard 
-              key={sticker.code} 
-              sticker={sticker} 
+            <StickerCard
+              key={sticker.code}
+              sticker={sticker}
               quantity={quantity}
               showDuplicatesQuantity={true}
               onPress={() => handleStickerInteraction(sticker, quantity)}
@@ -67,7 +79,6 @@ const DuplicatesScreen = () => {
             />
           );
         })}
-
         {Array.from({ length: 5 - item.data.length }).map((_, idx) => (
           <View key={`empty-${idx}`} className="w-1/5 p-0.5" />
         ))}
@@ -86,25 +97,22 @@ const DuplicatesScreen = () => {
             data={listData}
             extraData={ownedStickers}
             getItemType={(item) => item.type}
-            contentContainerStyle={{
-              paddingHorizontal: 16,
-              paddingBottom: 100,
-              paddingTop: 0,
-            }}
+            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 100, paddingTop: 0 }}
             keyExtractor={(item) =>
               item.type === 'header' ? `header-${item.title}` : `row-${item.data[0].code}`
             }
             renderItem={renderItem}
             ListEmptyComponent={() => (
-              <EmptyState 
-                message="Nenhuma figurinha repetida encontrada com esses filtros." 
-                isDuplicatesScreen={true} 
+              <EmptyState
+                message="Nenhuma figurinha repetida encontrada com esses filtros."
+                isDuplicatesScreen={true}
               />
             )}
           />
         )}
       </View>
-      <ManageStickerModal />
+      <UndoToast action={pendingAction} onUndo={undo} durationMs={UNDO_DURATION_MS} />
+      <ManageStickerModal onDeleteSuccess={handleDeleteSuccess} />
     </View>
   );
 };
