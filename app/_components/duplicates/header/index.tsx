@@ -4,16 +4,18 @@ import { LogOut } from 'lucide-react-native';
 import { useStickersStore } from '@/stores/stickers-store';
 import SearchBar from '@/components/shared/search-bar';
 import DuplicatesSectionFilter from './section-filter';
-import { supabase } from '@/lib/supabase/supabase';
 import { useDuplicatesFiltersStore } from '@/stores/duplicates-filters-store';
+import { useAuthStore } from '@/stores/auth-store';
 
 const DuplicatesHeader = () => {
   const { stickers } = useStickersStore();
   const { searchQuery, setSearchQuery, selectedSection, setSelectedSection } = useDuplicatesFiltersStore();
+  const { signOut } = useAuthStore();
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
+    try {
+      await signOut();
+    } catch (error: any) {
       console.error('Erro ao fazer logout:', error.message);
     }
   };

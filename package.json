@@ -44,6 +44,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
     "expo": "~54.0.29",
+    "expo-audio": "~1.1.1",
     "expo-auth-session": "~7.0.10",
     "expo-constants": "~18.0.12",
     "expo-haptics": "~15.0.8",

@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { View, Modal, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { useManageStickerStore } from '@/stores/manage-sticker-store';
 import { useUserStickersStore } from '@/stores/user-stickers-store';
-import { useAuthStore } from '@/stores/auth-store';
-import { supabase } from '@/lib/supabase/supabase';
+import { useToastStore } from '@/stores/toast-store';
 import { Text } from '@/components/ui/text';
 import { Button } from '@/components/ui/button';
 import { Minus, Plus, X } from 'lucide-react-native';
 import StickerCard from './sticker-card';
+import { playStickerSound } from '@/utils/sound';
 
 interface ManageStickerModalProps {
   /** Chamado após deletar uma figurinha com sucesso — usado para mostrar o undo toast */
@@ -16,7 +16,8 @@ interface ManageStickerModalProps {
 
 const ManageStickerModal = ({ onDeleteSuccess }: ManageStickerModalProps) => {
   const { isOpen, selectedSticker, currentQuantity, closeModal } = useManageStickerStore();
-  const { fetchUserStickers } = useUserStickersStore();
+  const { upsertSticker, optimisticRemove } = useUserStickersStore();
+  const { showToast } = useToastStore();
   const [localQuantity, setLocalQuantity] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -38,45 +39,22 @@ const ManageStickerModal = ({ onDeleteSuccess }: ManageStickerModalProps) => {
 
     setIsSaving(true);
     try {
-      const session = useAuthStore.getState().session;
-      const userId = session?.user?.id;
-
-      if (!userId) {
-        throw new Error('Usuário não autenticado.');
-      }
-
       const isDeleting = localQuantity === 0;
       const previousQuantity = currentQuantity;
 
       if (isDeleting) {
-        const { error } = await supabase
-          .from('user_stickers')
-          .delete()
-          .eq('user_id', userId)
-          .eq('sticker_code', selectedSticker.code);
-
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.from('user_stickers').upsert(
-          {
-            user_id: userId,
-            sticker_code: selectedSticker.code,
-            quantity: localQuantity,
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: 'user_id, sticker_code' }
-        );
-
-        if (error) throw error;
-      }
-
-      await fetchUserStickers();
-      closeModal();
-
-      // Notifica o screen pai para mostrar o undo toast de remoção
-      if (isDeleting) {
+        optimisticRemove(selectedSticker.code);
+        closeModal();
         onDeleteSuccess?.(selectedSticker.code, previousQuantity);
+        setIsSaving(false);
+        return;
       }
+
+      await upsertSticker(selectedSticker.code, localQuantity);
+
+      playStickerSound();
+      showToast(`Figurinha ${selectedSticker.code} atualizada!`);
+      closeModal();
     } catch (error: any) {
       Alert.alert('Erro', error.message || 'Houve um erro ao salvar a figurinha.');
     } finally {

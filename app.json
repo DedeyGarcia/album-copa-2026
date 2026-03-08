@@ -15,7 +15,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.dedeygarcia.copa2026",
@@ -37,7 +39,11 @@
         "backgroundColor": "#151718"
       }
     },
-    "plugins": ["expo-router", "expo-web-browser"],
+    "plugins": [
+      "expo-router",
+      "expo-web-browser",
+      "expo-audio"
+    ],
     "experiments": {
       "typedRoutes": true
     }

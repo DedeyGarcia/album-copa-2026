@@ -13,6 +13,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { supabase } from '@/lib/supabase/supabase';
 import { useThemeStore } from '@/stores/theme-store';
 import { useUserStickersStore } from '@/stores/user-stickers-store';
+import GlobalToast from '@/components/shared/global-toast';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -89,6 +90,7 @@ const RootLayout = () => {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
       <PortalHost />
+      <GlobalToast />
     </ThemeProvider>
   );
 };

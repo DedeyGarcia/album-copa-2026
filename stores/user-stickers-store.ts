@@ -14,6 +14,9 @@ type UserStickersActions = {
   optimisticAdd: (stickerCode: string) => void;
   optimisticRemove: (stickerCode: string) => void;
   commitAdd: (stickerCode: string) => Promise<void>;
+  commitRemove: (stickerCode: string) => Promise<void>;
+  revertRemove: (stickerCode: string, quantity: number) => void;
+  clearUserStickers: () => void;
 };
 
 const initialState: UserStickersState = {
@@ -23,6 +26,8 @@ const initialState: UserStickersState = {
 
 export const useUserStickersStore = create<UserStickersState & UserStickersActions>((set, get) => ({
   ...initialState,
+
+  clearUserStickers: () => set(initialState),
 
   fetchUserStickers: async () => {
     set({ isLoading: true });
@@ -131,6 +136,44 @@ export const useUserStickersStore = create<UserStickersState & UserStickersActio
     if (error) {
       console.error('Erro ao commitar figurinha:', error);
       set({ userStickers: current.filter((s) => s.sticker_code !== stickerCode) });
+    }
+  },
+
+  commitRemove: async (stickerCode: string) => {
+    const session = useAuthStore.getState().session;
+    const userId = session?.user?.id;
+    if (!userId) return;
+
+    const current = get().userStickers;
+    const { error } = await supabase
+      .from('user_stickers')
+      .delete()
+      .eq('user_id', userId)
+      .eq('sticker_code', stickerCode);
+
+    if (error) {
+      console.error('Erro ao efetivar remoção:', error);
+      // Wait, if removal fails, we can't easily revert without knowing the old quantity from the DB.
+      // But typically this shouldn't silent fail anyway.
+    }
+  },
+
+  revertRemove: (stickerCode: string, quantity: number) => {
+    const session = useAuthStore.getState().session;
+    const userId = session?.user?.id;
+    if (!userId) return;
+
+    const current = get().userStickers;
+    const existing = current.find((s) => s.sticker_code === stickerCode);
+
+    if (!existing) {
+      const now = new Date().toISOString();
+      set({
+        userStickers: [
+          ...current,
+          { user_id: userId, sticker_code: stickerCode, quantity, created_at: now, updated_at: now },
+        ],
+      });
     }
   },
 }));

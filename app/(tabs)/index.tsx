@@ -8,23 +8,21 @@ import { Sticker } from '@/types';
 import { useStickerFiltersStore } from '@/stores/stickers-filters-store';
 import { useUserStickersStore } from '@/stores/user-stickers-store';
 import { useManageStickerStore } from '@/stores/manage-sticker-store';
-import { useUndoToast } from '@/hooks/use-undo-toast';
+import { useToastStore } from '@/stores/toast-store';
 import EmptyState from '@/components/shared/empty-state';
 import AlbumScreenHeader from '../_components/album/header';
 import StickerCard from '@/components/shared/sticker-card';
 import ManageStickerModal from '@/components/shared/manage-sticker-modal';
 import LoadingState from '../_components/album/loading-state';
-import UndoToast from '@/components/shared/undo-toast';
 import { generateStickerListData, ListItem } from '@/utils/sticker-utils';
-
-const UNDO_DURATION_MS = 4000;
+import { playStickerSound } from '@/utils/sound';
 
 const AlbumScreen = () => {
   const { stickers, isLoading: isLoadingStickers } = useStickersStore();
   const { selectedSection, filterBy, searchQuery } = useStickerFiltersStore();
-  const { userStickers, isLoading: isLoadingUserStickers, optimisticAdd, optimisticRemove, commitAdd, upsertSticker } = useUserStickersStore();
+  const { userStickers, isLoading: isLoadingUserStickers, optimisticAdd, optimisticRemove, commitAdd, commitRemove, revertRemove, upsertSticker } = useUserStickersStore();
   const { openModal } = useManageStickerStore();
-  const { pendingAction, show: showToast, undo, flush } = useUndoToast(UNDO_DURATION_MS);
+  const { showToast, hideToast } = useToastStore();
 
   const isInitialLoad = (isLoadingStickers || isLoadingUserStickers) && (!stickers || stickers.length === 0);
   const insets = useSafeAreaInsets();
@@ -49,33 +47,33 @@ const AlbumScreen = () => {
 
   const handleStickerPress = useCallback((sticker: Sticker, quantity: number) => {
     if (quantity === 0) {
-      flush();
+      hideToast();
+      playStickerSound();
       optimisticAdd(sticker.code);
-      showToast({
+      showToast('', 'undo_add', {
         code: sticker.code,
-        variant: 'add',
         onTimeout: () => commitAdd(sticker.code),
         onUndo: () => optimisticRemove(sticker.code),
       });
     } else {
-      flush();
+      hideToast();
       openModal(sticker, quantity);
     }
-  }, [flush, optimisticAdd, optimisticRemove, commitAdd, openModal, showToast]);
+  }, [hideToast, optimisticAdd, optimisticRemove, commitAdd, openModal, showToast]);
 
   const handleStickerLongPress = useCallback((sticker: Sticker, quantity: number) => {
-    flush();
+    hideToast();
     openModal(sticker, quantity);
-  }, [flush, openModal]);
+  }, [hideToast, openModal]);
 
   const handleDeleteSuccess = useCallback((code: string, previousQuantity: number) => {
-    showToast({
+    playStickerSound();
+    showToast('', 'undo_remove', {
       code,
-      variant: 'remove',
-      onTimeout: () => {},
-      onUndo: () => upsertSticker(code, previousQuantity),
+      onTimeout: () => commitRemove(code),
+      onUndo: () => revertRemove(code, previousQuantity),
     });
-  }, [showToast, upsertSticker]);
+  }, [showToast, commitRemove, revertRemove]);
 
   const renderItem = useCallback(({ item }: { item: ListItem }) => {
     if (item.type === 'header') {
@@ -141,7 +139,6 @@ const AlbumScreen = () => {
           />
         )}
       </View>
-      <UndoToast action={pendingAction} onUndo={undo} durationMs={UNDO_DURATION_MS} />
       <ManageStickerModal onDeleteSuccess={handleDeleteSuccess} />
     </View>
   );

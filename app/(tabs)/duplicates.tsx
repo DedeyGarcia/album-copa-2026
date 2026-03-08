@@ -6,25 +6,23 @@ import { Text } from '@/components/ui/text';
 import { useStickersStore } from '@/stores/stickers-store';
 import { useUserStickersStore } from '@/stores/user-stickers-store';
 import { useManageStickerStore } from '@/stores/manage-sticker-store';
-import { useUndoToast } from '@/hooks/use-undo-toast';
+import { useToastStore } from '@/stores/toast-store';
 import { Sticker } from '@/types';
 import LoadingState from '../_components/album/loading-state';
 import DuplicatesHeader from '../_components/duplicates/header';
 import StickerCard from '@/components/shared/sticker-card';
 import ManageStickerModal from '@/components/shared/manage-sticker-modal';
-import UndoToast from '@/components/shared/undo-toast';
 import { useDuplicatesFiltersStore } from '@/stores/duplicates-filters-store';
 import EmptyState from '@/components/shared/empty-state';
 import { generateStickerListData, ListItem } from '@/utils/sticker-utils';
-
-const UNDO_DURATION_MS = 4000;
+import { playStickerSound } from '@/utils/sound';
 
 const DuplicatesScreen = () => {
   const { stickers, isLoading: isLoadingStickers } = useStickersStore();
-  const { userStickers, isLoading: isLoadingUserStickers, upsertSticker } = useUserStickersStore();
+  const { userStickers, isLoading: isLoadingUserStickers, commitRemove, revertRemove } = useUserStickersStore();
   const { searchQuery, selectedSection } = useDuplicatesFiltersStore();
   const { openModal } = useManageStickerStore();
-  const { pendingAction, show: showToast, undo, flush } = useUndoToast(UNDO_DURATION_MS);
+  const { showToast, hideToast } = useToastStore();
 
   const insets = useSafeAreaInsets();
   const isInitialLoad = (isLoadingStickers || isLoadingUserStickers) && (!stickers || stickers.length === 0);
@@ -46,18 +44,18 @@ const DuplicatesScreen = () => {
   }, [stickers, ownedStickers, searchQuery, selectedSection]);
 
   const handleStickerInteraction = useCallback((sticker: Sticker, quantity: number) => {
-    flush();
+    hideToast();
     openModal(sticker, quantity);
-  }, [flush, openModal]);
+  }, [hideToast, openModal]);
 
   const handleDeleteSuccess = useCallback((code: string, previousQuantity: number) => {
-    showToast({
+    playStickerSound();
+    showToast('', 'undo_remove', {
       code,
-      variant: 'remove',
-      onTimeout: () => {},
-      onUndo: () => upsertSticker(code, previousQuantity),
+      onTimeout: () => commitRemove(code),
+      onUndo: () => revertRemove(code, previousQuantity),
     });
-  }, [showToast, upsertSticker]);
+  }, [showToast, commitRemove, revertRemove]);
 
   const renderItem = useCallback(({ item }: { item: ListItem }) => {
     if (item.type === 'header') {
@@ -111,7 +109,6 @@ const DuplicatesScreen = () => {
           />
         )}
       </View>
-      <UndoToast action={pendingAction} onUndo={undo} durationMs={UNDO_DURATION_MS} />
       <ManageStickerModal onDeleteSuccess={handleDeleteSuccess} />
     </View>
   );
