@@ -69,17 +69,17 @@ const SECTION_MAP: Record<string, { icon: string }> = {
   'Nova Zelândia': { icon: '🇳🇿' },
 };
 
-interface CountryFilterProps {
+interface SectionFilterProps {
   availableSections: string[];
   selectedSection: string | null;
   onSelect: (section: string | null) => void;
 }
 
-const CountryFilter = ({
+const SectionFilter = ({
   availableSections,
   selectedSection,
   onSelect,
-}: CountryFilterProps) => {
+}: SectionFilterProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -183,4 +183,4 @@ const CountryFilter = ({
   );
 };
 
-export default CountryFilter;
+export default SectionFilter;
