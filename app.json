@@ -1,33 +1,41 @@
 {
   "expo": {
-    "name": "minimal",
-    "slug": "minimal",
+    "name": "Copa 2026",
+    "slug": "copa-2026",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "minimal",
+    "icon": "./assets/images/logo-fifa.webp",
+    "scheme": "copa-2026",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "primaryColor": "#1E5CFF",
+    "backgroundColor": "#ffffff",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/images/logo-fifa.webp",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "com.dedeygarcia.copa2026",
+      "userInterfaceStyle": "automatic"
     },
     "android": {
+      "package": "com.dedeygarcia.copa2026",
       "edgeToEdgeEnabled": true,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/logo-fifa.webp",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "dark": {
+        "backgroundColor": "#151718"
+      }
     },
     "plugins": ["expo-router", "expo-web-browser"],
     "experiments": {

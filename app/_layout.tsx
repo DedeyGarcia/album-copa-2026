@@ -1,5 +1,6 @@
 import '@/global.css';
 
+import * as SplashScreen from 'expo-splash-screen';
 import { Appearance } from 'react-native';
 import { NAV_THEME } from '@/lib/theme';
 import { useStickersStore } from '@/stores/stickers-store';
@@ -17,6 +18,9 @@ export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router';
+
+// Prevent the splash screen from auto-hiding before asset loading is complete.
+SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
   const { fetchStickers } = useStickersStore((state) => state);
@@ -45,8 +49,7 @@ const RootLayout = () => {
     } else if (session && inAuthGroup) {
       router.replace('/(tabs)');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session, isLoadingAuth, segments]);
+  }, [session, isLoadingAuth, segments, router]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -61,8 +64,22 @@ const RootLayout = () => {
     });
 
     return () => subscription.unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setSession, fetchUserStickers]);
+
+  useEffect(() => {
+    const hideSplash = async () => {
+      if (!isLoadingAuth) {
+        // Wait a tiny bit to allow the router to stabilize its initial redirect
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        await SplashScreen.hideAsync();
+      }
+    };
+    hideSplash();
+  }, [isLoadingAuth]);
+
+  if (isLoadingAuth) {
+    return null;
+  }
 
   return (
     <ThemeProvider value={NAV_THEME[(theme ?? 'light') as keyof typeof NAV_THEME]}>
