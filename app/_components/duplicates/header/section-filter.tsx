@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
 import { ChevronDown } from 'lucide-react-native';
 import SectionFilterModal, { SECTION_MAP } from '@/components/shared/section-filter-modal';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
 
 interface DuplicatesSectionFilterProps {
   availableSections: string[];
@@ -18,10 +19,11 @@ const DuplicatesSectionFilter = ({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <View className="mb-2 w-full">
-      <TouchableOpacity
+    <>
+      <Button
+        variant="outline"
         onPress={() => setIsOpen(true)}
-        className="bg-muted flex-row items-center justify-between rounded-md px-4 py-3"
+        className="mb-2 h-auto w-full flex-row items-center justify-between px-4 py-3"
       >
         <Text className={cn(
           "text-base font-medium",
@@ -32,7 +34,7 @@ const DuplicatesSectionFilter = ({
             : 'Filtre por País...'}
         </Text>
         <ChevronDown className="text-muted-foreground" size={20} />
-      </TouchableOpacity>
+      </Button>
 
       <SectionFilterModal
         isOpen={isOpen}
@@ -41,7 +43,7 @@ const DuplicatesSectionFilter = ({
         selectedSection={selectedSection}
         onSelect={onSelect}
       />
-    </View>
+    </>
   );
 };
 

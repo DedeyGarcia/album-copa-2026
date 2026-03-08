@@ -33,7 +33,7 @@ const StickerCard = ({ sticker, quantity, showDuplicatesQuantity = true }: Stick
           {isOwned && quantity > 1 && showDuplicatesQuantity && (
              <View className="absolute top-1 right-1 bg-destructive rounded-full w-5 h-5 items-center justify-center z-10 shadow-sm">
                 <Text className="text-destructive-foreground text-[10px] font-bold">
-                  {quantity}
+                  {quantity - 1}
                 </Text>
              </View>
           )}
