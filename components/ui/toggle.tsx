@@ -18,7 +18,7 @@ const toggleVariants = cva(
       variant: {
         default: 'bg-transparent',
         outline: cn(
-          'border-input active:bg-accent border bg-transparent shadow-sm shadow-black/5',
+          'border-input border bg-transparent shadow-sm shadow-black/5',
           Platform.select({
             web: 'hover:bg-accent hover:text-accent-foreground',
           })
@@ -50,7 +50,7 @@ function Toggle({
       value={cn(
         'text-sm text-foreground font-medium',
         props.pressed
-          ? 'text-accent-foreground'
+          ? 'text-primary-foreground'
           : Platform.select({ web: 'group-hover:text-muted-foreground' }),
         className
       )}>
@@ -58,7 +58,7 @@ function Toggle({
         className={cn(
           toggleVariants({ variant, size }),
           props.disabled && 'opacity-50',
-          props.pressed && 'bg-accent',
+          props.pressed && 'bg-primary',
           className
         )}
         {...props}
