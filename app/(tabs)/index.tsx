@@ -3,16 +3,15 @@ import { View } from 'react-native';
 import { FlashList, FlashListRef } from '@shopify/flash-list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/components/ui/text';
-import { Card } from '@/components/ui/card';
 import { useStickersStore } from '@/stores/stickers-store';
 import { Sticker } from '@/types';
 import { useStickerFiltersStore } from '@/stores/stickers-filters-store';
 import { useUserStickersStore } from '@/stores/user-stickers-store';
-import EmptyState from '@/components/shared/album-screen/empty-state';
-import AlbumScreenHeader from '@/components/shared/album-screen/header';
+import EmptyState from '../_components/album/empty-state';
+import AlbumScreenHeader from '../_components/album/header';
 import StickerCard from '@/components/shared/sticker-card';
 import ManageStickerModal from '@/components/shared/manage-sticker-modal';
-import LoadingState from '@/components/shared/album-screen/loading-state';
+import LoadingState from '../_components/album/loading-state';
 
 type ListItem = { type: 'header'; title: string } | { type: 'row'; data: Sticker[] };
 
@@ -21,7 +20,6 @@ const AlbumScreen = () => {
   const { selectedSection, filterBy, searchQuery } = useStickerFiltersStore();
   const { userStickers, isLoading: isLoadingUserStickers } = useUserStickersStore();
 
-  // Só mostra tela de carregamento inteira se não tivermos os dados ainda
   const isInitialLoad = (isLoadingStickers || isLoadingUserStickers) && (!stickers || stickers.length === 0);
   
   const insets = useSafeAreaInsets();

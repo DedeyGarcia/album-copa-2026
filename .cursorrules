@@ -13,6 +13,7 @@
 - **Rotas**: Todos os arquivos de tela devem estar em `/app`.
 - **Componentes Base**: Caso precise de um componente base novo do @react-native-reusables, **estou autorizado a rodar o script de instalação (`npx @react-native-reusables...`) automaticamente**.
 - **Componentes**: Componentes reutilizáveis em `/components`. Use PascalCase para nomes de arquivos (Ex: `Button.tsx`).
+- **Componentes de Tela**: Para componentes específicos de uma rota, use a abordagem de pastas prefixadas com `_` dentro do diretório `app` (Ex: `/app/_components/album/`). Mantenha-os na raiz da pasta `/app` e não dentro de grupos de rota como `(tabs)` para evitar que o Expo Router crie abas extras automaticamente. Evite a pasta `/features/`.
 - **Lógica/Utilidades**: Funções auxiliares em `/lib`.
 - **Tipos**: Definições globais em `/types`.
 
