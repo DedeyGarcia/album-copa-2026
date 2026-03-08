@@ -7,13 +7,12 @@ import { useStickersStore } from '@/stores/stickers-store';
 import { Sticker } from '@/types';
 import { useStickerFiltersStore } from '@/stores/stickers-filters-store';
 import { useUserStickersStore } from '@/stores/user-stickers-store';
-import EmptyState from '../_components/album/empty-state';
+import EmptyState from '@/components/shared/empty-state';
 import AlbumScreenHeader from '../_components/album/header';
 import StickerCard from '@/components/shared/sticker-card';
 import ManageStickerModal from '@/components/shared/manage-sticker-modal';
 import LoadingState from '../_components/album/loading-state';
-
-type ListItem = { type: 'header'; title: string } | { type: 'row'; data: Sticker[] };
+import { generateStickerListData, ListItem } from '@/utils/sticker-utils';
 
 const AlbumScreen = () => {
   const { stickers, isLoading: isLoadingStickers } = useStickersStore();
@@ -34,54 +33,14 @@ const AlbumScreen = () => {
   }, [userStickers]);
 
   const listData = useMemo(() => {
-    if (!stickers || stickers.length === 0) return [];
-
-    const lowerQuery = searchQuery?.toLowerCase() || '';
-
-    const filteredStickers = stickers.filter((sticker) => {
-      const matchesSection = !selectedSection || sticker.section === selectedSection;
-
-      const ownedQuantity = ownedStickers.get(sticker.code) || 0;
-      const isOwned = ownedQuantity > 0;
-      let matchesStatus = true;
-      if (filterBy === 'owned') matchesStatus = isOwned;
-      if (filterBy === 'missing') matchesStatus = !isOwned;
-
-      let matchesSearch = true;
-      if (lowerQuery) {
-        matchesSearch =
-          sticker.code.toLowerCase().includes(lowerQuery) ||
-          (sticker.name ? sticker.name.toLowerCase().includes(lowerQuery) : false);
-      }
-
-      return matchesSection && matchesStatus && matchesSearch;
+    return generateStickerListData({
+      stickers,
+      ownedStickers,
+      searchQuery,
+      selectedSection,
+      filterBy,
+      onlyDuplicates: false,
     });
-
-    const sorted = [...filteredStickers].sort((a, b) => a.album_index - b.album_index);
-
-    const grouped = sorted.reduce(
-      (acc, sticker) => {
-        if (!acc[sticker.section]) acc[sticker.section] = [];
-        acc[sticker.section].push(sticker);
-        return acc;
-      },
-      {} as Record<string, Sticker[]>
-    );
-
-    const flattened: ListItem[] = [];
-
-    Object.entries(grouped).forEach(([sectionTitle, sectionStickers]) => {
-      flattened.push({ type: 'header', title: sectionTitle });
-
-      for (let i = 0; i < sectionStickers.length; i += 4) {
-        flattened.push({
-          type: 'row',
-          data: sectionStickers.slice(i, i + 4),
-        });
-      }
-    });
-
-    return flattened;
   }, [stickers, selectedSection, filterBy, ownedStickers, searchQuery]);
 
   const renderItem = useCallback(({ item }: { item: ListItem }) => {
@@ -142,7 +101,9 @@ const AlbumScreen = () => {
               item.type === 'header' ? `header-${item.title}` : `row-${item.data[0].code}`
             }
             renderItem={renderItem}
-            ListEmptyComponent={EmptyState}
+            ListEmptyComponent={() => (
+              <EmptyState message="Nenhuma figurinha encontrada para os filtros selecionados." />
+            )}
           />
         )}
       </View>

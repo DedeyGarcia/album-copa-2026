@@ -5,7 +5,7 @@ import { useStickerFiltersStore } from '@/stores/stickers-filters-store';
 import AlbumProgress from './album-progress';
 import SectionFilter from './section-filter';
 import StatusFilter from './status-filter';
-import SearchBar from './search-bar';
+import SearchBar from '@/components/shared/search-bar';
 
 const AlbumScreenHeader = () => {
   const { stickers } = useStickersStore();

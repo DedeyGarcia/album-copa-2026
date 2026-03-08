@@ -22,7 +22,11 @@
 - **Hooks**: Use hooks personalizados para separar lógica de renderização quando necessário.
 - **Tailwind**: Use classes do Tailwind diretamente na prop `className`. Evite `StyleSheet.create`.
 - **Zustand**: Siga o padrão de hooks para acessar as stores (Ex: `useAuthStore`).
+- **Versões e Bibliotecas**: SEMPRE cheque o `package.json` para conferir a versão das bibliotecas instaladas e valide as propriedades disponíveis para aquela versão via TypeScript antes de implementar. Evite usar props descontinuadas (Ex: `estimatedItemSize` no `@shopify/flash-list` v2) que acionam erros no editor.
+- **Modularização (DRY)**: Componentize o máximo possível. Se um bloco de UI (ex: Empty State) ou de lógica (ex: List Data Generator) for usado em mais de uma tela, abstraia-os para "components/shared" ou uma pasta genérica "utils". Evite código duplicado (inline).
 - **Comentários**: Não coloque comentários desnecessários ou óbvios (Ex: `// fetch data`). Use comentários apenas para explicar lógicas complexas ou decisões não óbvias. Preferimos código limpo e autoexplicativo.
+- **Imports**: **Sempre** remover imports de componentes, hooks, bibliotecas e tipos que não estão mais sendo utilizados após criar ou modificar um arquivo.
+
 
 
 ## Preferências de Resposta
