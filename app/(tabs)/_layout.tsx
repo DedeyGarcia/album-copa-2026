@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { LayoutDashboard, UserCircle, Settings } from 'lucide-react-native';
+import { LayoutDashboard, Copy, BarChart2, Settings } from 'lucide-react-native';
 
 const TabLayout = () => {
   return (
@@ -15,7 +15,14 @@ const TabLayout = () => {
         name="duplicates"
         options={{
           title: 'Repetidas',
-          tabBarIcon: ({ color }) => <UserCircle color={color} size={24} />,
+          tabBarIcon: ({ color }) => <Copy color={color} size={24} />,
+        }}
+      />
+      <Tabs.Screen
+        name="stats"
+        options={{
+          title: 'Estatísticas',
+          tabBarIcon: ({ color }) => <BarChart2 color={color} size={24} />,
         }}
       />
       <Tabs.Screen
