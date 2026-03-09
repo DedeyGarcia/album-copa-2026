@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { View, Animated, TouchableOpacity } from 'react-native';
+import { View, Animated, TouchableOpacity, PanResponder } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CheckCircle, AlertCircle, Info, Trash2, Undo2 } from 'lucide-react-native';
@@ -36,10 +36,11 @@ const CONFIG: Record<string, any> = {
 };
 
 const GlobalToast = () => {
-  const { toast, triggerUndo } = useToastStore();
+  const { toast, triggerUndo, hideToast } = useToastStore();
   const insets = useSafeAreaInsets();
   
-  const translateY = useRef(new Animated.Value(100)).current;
+  const translateY = useRef(new Animated.Value(200)).current;
+  const panX = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(0)).current;
   const progressWidth = useRef(new Animated.Value(100)).current;
   
@@ -47,15 +48,52 @@ const GlobalToast = () => {
 
   const isVisible = toast !== null;
 
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        return Math.abs(gestureState.dx) > 10;
+      },
+      onPanResponderMove: Animated.event(
+        [null, { dx: panX }],
+        { useNativeDriver: false }
+      ),
+      onPanResponderRelease: (_, gestureState) => {
+        if (Math.abs(gestureState.dx) > 100 || Math.abs(gestureState.vx) > 1) {
+          Animated.parallel([
+            Animated.timing(panX, {
+              toValue: gestureState.dx > 0 ? 500 : -500,
+              duration: 200,
+              useNativeDriver: false,
+            }),
+            Animated.timing(opacity, {
+              toValue: 0,
+              duration: 200,
+              useNativeDriver: false,
+            })
+          ]).start(() => {
+            hideToast();
+          });
+        } else {
+          Animated.spring(panX, {
+            toValue: 0,
+            useNativeDriver: false,
+          }).start();
+        }
+      },
+    })
+  ).current;
+
   useEffect(() => {
     if (isVisible) {
       setLastToast(toast);
+      panX.setValue(0);
       if (toast.action) {
          progressWidth.setValue(100);
       }
       Animated.parallel([
-        Animated.spring(translateY, { toValue: 0, tension: 80, friction: 10, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+        Animated.spring(translateY, { toValue: 0, tension: 80, friction: 10, useNativeDriver: false }),
+        Animated.timing(opacity, { toValue: 1, duration: 200, useNativeDriver: false }),
       ]).start();
       
       if (toast.action) {
@@ -63,8 +101,8 @@ const GlobalToast = () => {
       }
     } else {
       Animated.parallel([
-        Animated.timing(translateY, { toValue: 100, duration: 250, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 0, duration: 200, useNativeDriver: true }),
+        Animated.timing(translateY, { toValue: 100, duration: 250, useNativeDriver: false }),
+        Animated.timing(opacity, { toValue: 0, duration: 200, useNativeDriver: false }),
       ]).start();
     }
   }, [isVisible, toast?.id]);
@@ -78,12 +116,13 @@ const GlobalToast = () => {
   return (
     <Animated.View
       pointerEvents="box-none"
+      {...panResponder.panHandlers}
       style={{
         position: 'absolute',
         bottom: Math.max(insets.bottom + 20, 20),
         left: 16,
         right: 16,
-        transform: [{ translateY }],
+        transform: [{ translateY }, { translateX: panX }],
         opacity,
         zIndex: 9999,
       }}

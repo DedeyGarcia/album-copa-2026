@@ -24,9 +24,6 @@ const DuplicatesHeader = () => {
     <View className="bg-background border-border/50 border-b px-4 pt-4 pb-2">
       <View className="mb-4 flex-row items-center justify-between">
         <Text className="text-foreground text-2xl font-bold">Figurinhas Repetidas</Text>
-        <TouchableOpacity onPress={handleLogout} className="p-2">
-          <LogOut size={20} className="text-destructive" />
-        </TouchableOpacity>
       </View>
 
       <View className="mb-2">

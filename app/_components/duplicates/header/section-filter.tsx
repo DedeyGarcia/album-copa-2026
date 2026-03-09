@@ -31,7 +31,7 @@ const DuplicatesSectionFilter = ({
         )}>
           {selectedSection 
             ? `${SECTION_MAP[selectedSection]?.icon || '🏳️'} ${selectedSection}` 
-            : 'Filtre por País...'}
+            : 'Filtre por País ou Seção...'}
         </Text>
         <ChevronDown className="text-muted-foreground" size={20} />
       </Button>

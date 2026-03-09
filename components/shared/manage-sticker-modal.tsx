@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Modal, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Modal, TouchableOpacity, TouchableWithoutFeedback, Alert, ActivityIndicator } from 'react-native';
 import { useManageStickerStore } from '@/stores/manage-sticker-store';
 import { useUserStickersStore } from '@/stores/user-stickers-store';
 import { useToastStore } from '@/stores/toast-store';
@@ -10,7 +10,6 @@ import StickerCard from './sticker-card';
 import { playStickerSound } from '@/utils/sound';
 
 interface ManageStickerModalProps {
-  /** Chamado após deletar uma figurinha com sucesso — usado para mostrar o undo toast */
   onDeleteSuccess?: (code: string, previousQuantity: number) => void;
 }
 
@@ -69,69 +68,75 @@ const ManageStickerModal = ({ onDeleteSuccess }: ManageStickerModalProps) => {
       animationType="fade"
       onRequestClose={closeModal}
     >
-      <View className="flex-1 justify-center items-center bg-black/60 px-4">
-        <View className="w-full max-w-sm bg-background rounded-2xl overflow-hidden shadow-xl">
-          {/* Header */}
-          <View className="flex-row items-center justify-between p-4 border-b border-border/50">
-            <Text className="text-xl font-bold">Figurinha: {selectedSticker.code}</Text>
-            <TouchableOpacity onPress={closeModal} className="p-2 -mr-2">
-              <X size={20} className="text-muted-foreground" />
-            </TouchableOpacity>
-          </View>
+      <TouchableOpacity 
+        activeOpacity={1} 
+        onPress={closeModal} 
+        className="flex-1 justify-center items-center bg-black/60 px-4"
+      >
+        <TouchableWithoutFeedback>
+          <View className="w-full max-w-sm bg-background rounded-2xl overflow-hidden shadow-xl">
+            {/* Header */}
+            <View className="flex-row items-center justify-between p-4 border-b border-border/50">
+              <Text className="text-xl font-bold">Figurinha: {selectedSticker.code}</Text>
+              <TouchableOpacity onPress={closeModal} className="p-2 -mr-2">
+                <X size={20} className="text-muted-foreground" />
+              </TouchableOpacity>
+            </View>
 
-          {/* Body */}
-          <View className="p-6 items-center">
-            {selectedSticker.name && (
-               <Text className="text-muted-foreground text-center mb-6">{selectedSticker.name}</Text>
-            )}
+            {/* Body */}
+            <View className="p-6 items-center">
+              {selectedSticker.name && (
+                 <Text className="text-muted-foreground text-center mb-6">{selectedSticker.name}</Text>
+              )}
 
-            <StickerCard sticker={selectedSticker} quantity={localQuantity} />
+              <StickerCard sticker={selectedSticker} quantity={localQuantity} />
 
-            <Text className="text-lg font-semibold mb-4">Quantidade:</Text>
-            
-            <View className="flex-row items-center gap-6">
+              <Text className="text-lg font-semibold mb-4 mt-6">Quantidade:</Text>
+              
+              <View className="flex-row items-center gap-6">
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  className="w-12 h-12 rounded-full"
+                  onPress={() => setLocalQuantity(Math.max(0, localQuantity - 1))}
+                >
+                  <Minus size={24} className={localQuantity > 0 ? "text-foreground" : "text-muted-foreground opacity-50"} />
+                </Button>
+                
+                <Text className="text-4xl font-bold w-12 text-center">{localQuantity}</Text>
+                
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  className="w-12 h-12 rounded-full"
+                  onPress={() => setLocalQuantity(localQuantity + 1)}
+                >
+                  <Plus size={24} className="text-foreground" />
+                </Button>
+              </View>
+            </View>
+
+            {/* Footer */}
+            <View className="flex-row items-center border-t border-border/50 p-4 gap-3 bg-muted/20">
               <Button 
                 variant="outline" 
-                size="icon"
-                className="w-12 h-12 rounded-full"
-                onPress={() => setLocalQuantity(Math.max(0, localQuantity - 1))}
+                className="flex-1" 
+                onPress={closeModal}
+                disabled={isSaving}
               >
-                <Minus size={24} className={localQuantity > 0 ? "text-foreground" : "text-muted-foreground opacity-50"} />
+                <Text>Cancelar</Text>
               </Button>
-              
-              <Text className="text-4xl font-bold w-12 text-center">{localQuantity}</Text>
-              
               <Button 
-                variant="outline" 
-                size="icon" 
-                className="w-12 h-12 rounded-full"
-                onPress={() => setLocalQuantity(localQuantity + 1)}
+                className="flex-1" 
+                onPress={handleSave}
+                disabled={isSaving || !hasChanged}
               >
-                <Plus size={24} className="text-foreground" />
+                {isSaving ? <ActivityIndicator color="#FFF" /> : <Text>Salvar</Text>}
               </Button>
             </View>
           </View>
-
-          {/* Footer */}
-          <View className="flex-row items-center border-t border-border/50 p-4 gap-3 bg-muted/20">
-            <Button 
-              variant="outline" 
-              className="flex-1" 
-              onPress={closeModal}
-              disabled={isSaving}
-            >
-              <Text>Cancelar</Text>
-            </Button>
-            <Button 
-              className="flex-1" 
-              onPress={handleSave}
-              disabled={isSaving || !hasChanged}
-            >
-              {isSaving ? <ActivityIndicator color="#FFF" /> : <Text>Salvar</Text>}
-            </Button>
-          </View>
-        </View>
-      </View>
+        </TouchableWithoutFeedback>
+      </TouchableOpacity>
     </Modal>
   );
 };
