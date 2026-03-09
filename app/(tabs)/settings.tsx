@@ -8,11 +8,13 @@ import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { User, Volume2, Moon, LogOut } from 'lucide-react-native';
 import { useAuthStore } from '@/stores/auth-store';
+import { useAppTheme } from '@/hooks/use-app-theme';
 
 const SettingsScreen = () => {
   const insets = useSafeAreaInsets();
   const { profile, isLoadingProfile } = useUserProfileStore();
   const { theme, toggleTheme, soundEnabled, toggleSound } = useUserSettingsStore();
+  const { colors } = useAppTheme();
   const { signOut } = useAuthStore();
 
   return (
@@ -31,7 +33,7 @@ const SettingsScreen = () => {
                 resizeMode="cover"
               />
             ) : (
-              <User size={40} className="text-muted-foreground" />
+              <User size={40} color={colors.mutedForeground} />
             )}
           </View>
           <Text className="text-xl font-bold text-foreground">
@@ -47,8 +49,8 @@ const SettingsScreen = () => {
           <View className="gap-2">
             <View className="flex-row items-center justify-between bg-muted/30 p-4 rounded-xl">
               <View className="flex-row items-center gap-3">
-                <View className="w-10 h-10 rounded-full bg-blue-500/10 justify-center items-center">
-                  <Volume2 size={20} className="text-blue-500" />
+                <View className="w-10 h-10 rounded-full bg-primary/10 justify-center items-center">
+                  <Volume2 size={20} color={colors.primary} />
                 </View>
                 <Text className="text-base font-medium text-foreground">Sons do App</Text>
               </View>
@@ -57,8 +59,8 @@ const SettingsScreen = () => {
 
             <View className="flex-row items-center justify-between bg-muted/30 p-4 rounded-xl">
               <View className="flex-row items-center gap-3">
-                <View className="w-10 h-10 rounded-full bg-indigo-500/10 justify-center items-center">
-                  <Moon size={20} className="text-indigo-500" />
+                <View className="w-10 h-10 rounded-full bg-primary/10 justify-center items-center">
+                  <Moon size={20} color={colors.primary} />
                 </View>
                 <Text className="text-base font-medium text-foreground">Modo Escuro</Text>
               </View>

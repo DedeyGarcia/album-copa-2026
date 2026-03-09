@@ -5,7 +5,9 @@ import { Text } from '@/components/ui/text';
 import { Card } from '@/components/ui/card';
 import { useStickersStore } from '@/stores/stickers-store';
 import { useUserStickersStore } from '@/stores/user-stickers-store';
-import { Star, Copy, TrendingUp, TrendingDown, Award, Layers } from 'lucide-react-native';
+import { TrendingUp, TrendingDown, Star, Copy, Layers, Award, Target, Trophy } from 'lucide-react-native';
+import { useAuthStore } from '@/stores/auth-store';
+import { useAppTheme } from '@/hooks/use-app-theme';
 import { SECTION_MAP } from '@/components/shared/section-filter-modal';
 
 const NON_TEAM_SECTIONS = new Set(['Especiais', 'Estádios']);
@@ -14,6 +16,7 @@ const StatsScreen = () => {
   const insets = useSafeAreaInsets();
   const { stickers } = useStickersStore();
   const { userStickers } = useUserStickersStore();
+  const { colors } = useAppTheme();
 
   const stats = useMemo(() => {
     if (!stickers.length) return null;
@@ -114,29 +117,29 @@ const StatsScreen = () => {
       >
         <View className="bg-primary rounded-2xl p-5 mb-4">
           <Text
-            style={{ color: 'rgba(255,255,255,0.7)', fontSize: 11, fontWeight: '700', letterSpacing: 1, marginBottom: 4 }}
+            style={{ color: colors.primaryForeground, opacity: 0.7, fontSize: 11, fontWeight: '700', letterSpacing: 1, marginBottom: 4 }}
           >
             PROGRESSO GERAL
           </Text>
           <View className="flex-row items-end justify-between mb-3">
-            <Text style={{ fontSize: 56, fontWeight: '800', color: 'white', lineHeight: 60 }}>
+            <Text style={{ fontSize: 56, fontWeight: '800', color: colors.primaryForeground, lineHeight: 60 }}>
               {stats.albumProgress.toFixed(1)}%
             </Text>
-            <Text style={{ color: 'rgba(255,255,255,0.75)', fontSize: 14, marginBottom: 4 }}>
+            <Text style={{ color: colors.primaryForeground, opacity: 0.75, fontSize: 14, marginBottom: 4 }}>
               {stats.ownedUniqueCount} / {stats.totalStickers}
             </Text>
           </View>
-          <View style={{ height: 8, backgroundColor: 'rgba(255,255,255,0.25)', borderRadius: 4 }}>
+          <View style={{ height: 8, backgroundColor: colors.primaryForeground, opacity: 0.25, borderRadius: 4 }}>
             <View
               style={{
                 height: 8,
                 width: `${Math.min(stats.albumProgress, 100)}%`,
-                backgroundColor: 'white',
+                backgroundColor: colors.primaryForeground,
                 borderRadius: 4,
               }}
             />
           </View>
-          <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, marginTop: 8 }}>
+          <Text style={{ color: colors.primaryForeground, opacity: 0.6, fontSize: 12, marginTop: 8 }}>
             {stats.totalStickers - stats.ownedUniqueCount} figurinhas faltando
           </Text>
         </View>
@@ -153,7 +156,7 @@ const StatsScreen = () => {
 
           <Card className="flex-1 bg-muted/40 rounded-2xl px-4 pt-4 pb-4 gap-1 border-0 shadow-none">
             <View className="flex-row items-center gap-2 mb-1">
-              <Copy size={15} className="text-muted-foreground" />
+              <Copy size={15} color={colors.mutedForeground} />
               <Text className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">Repetidas</Text>
             </View>
             <Text className="text-foreground text-2xl font-bold">{stats.totalDuplicateCopies}</Text>
@@ -164,7 +167,7 @@ const StatsScreen = () => {
         <View className="flex-row gap-3 mb-5">
           <Card className="flex-1 bg-muted/40 rounded-2xl px-4 pt-4 pb-4 gap-1 border-0 shadow-none">
             <View className="flex-row items-center gap-2 mb-1">
-              <Layers size={15} className="text-muted-foreground" />
+              <Layers size={15} color={colors.mutedForeground} />
               <Text className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">Total Coletado</Text>
             </View>
             <Text className="text-foreground text-2xl font-bold">{stats.totalCopiesCollected}</Text>
@@ -173,7 +176,7 @@ const StatsScreen = () => {
 
           <Card className="flex-1 bg-muted/40 rounded-2xl px-4 pt-4 pb-4 gap-1 border-0 shadow-none">
             <View className="flex-row items-center gap-2 mb-1">
-              <Award size={15} className="text-muted-foreground" />
+              <Award size={15} color={colors.mutedForeground} />
               <Text className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">Falta Completar</Text>
             </View>
             {stats.mostMissingTeam ? (

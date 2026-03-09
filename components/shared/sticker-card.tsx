@@ -5,6 +5,7 @@ import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import { Check, X } from 'lucide-react-native';
 import { SECTION_MAP } from '@/components/shared/section-filter-modal';
+import { useAppTheme } from '@/hooks/use-app-theme';
 
 const FLAG_ISO_MAP: Record<string, string> = {
   'Argentina': 'ar', 'Brasil': 'br', 'Uruguai': 'uy', 'Colômbia': 'co', 'Equador': 'ec', 'Paraguai': 'py',
@@ -27,6 +28,7 @@ const StickerCard = ({ sticker, quantity, showDuplicatesQuantity = true, onPress
   const isOwned = quantity > 0;
   const isoCode = FLAG_ISO_MAP[sticker.section];
   const fallbackIcon = SECTION_MAP[sticker.section]?.icon || '🏆';
+  const { colors } = useAppTheme();
 
   return (
     <View className="w-1/5 p-0.5">
@@ -67,8 +69,8 @@ const StickerCard = ({ sticker, quantity, showDuplicatesQuantity = true, onPress
                  </View>
 
                  <View className="z-10 items-center justify-center">
-                   <Check color="#3b82f6" size={28} strokeWidth={4} />
-                 </View>
+                    <Check color={colors.primary} size={28} strokeWidth={4} />
+                  </View>
               </View>
 
               {quantity > 1 && showDuplicatesQuantity && (

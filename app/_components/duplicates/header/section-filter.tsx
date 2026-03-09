@@ -4,6 +4,7 @@ import SectionFilterModal, { SECTION_MAP } from '@/components/shared/section-fil
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import { useAppTheme } from '@/hooks/use-app-theme';
 
 interface DuplicatesSectionFilterProps {
   availableSections: string[];
@@ -17,6 +18,7 @@ const DuplicatesSectionFilter = ({
   onSelect,
 }: DuplicatesSectionFilterProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { colors } = useAppTheme();
 
   return (
     <>
@@ -33,7 +35,7 @@ const DuplicatesSectionFilter = ({
             ? `${SECTION_MAP[selectedSection]?.icon || '🏳️'} ${selectedSection}` 
             : 'Filtre por País ou Seção...'}
         </Text>
-        <ChevronDown className="text-muted-foreground" size={20} />
+        <ChevronDown color={colors.mutedForeground} size={20} />
       </Button>
 
       <SectionFilterModal

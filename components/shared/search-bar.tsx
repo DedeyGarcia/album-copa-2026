@@ -2,6 +2,7 @@ import { View, TouchableOpacity } from 'react-native';
 import { Search, X } from 'lucide-react-native';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { useAppTheme } from '@/hooks/use-app-theme';
 
 interface SearchBarProps {
   value: string;
@@ -11,10 +12,12 @@ interface SearchBarProps {
 }
 
 const SearchBar = ({ value, onChangeText, placeholder, className }: SearchBarProps) => {
+  const { colors } = useAppTheme();
+
   return (
     <View className={cn('relative flex-row items-center', className)}>
       <View className="absolute left-3 z-10">
-        <Search size={18} className="text-muted-foreground" />
+        <Search size={18} color={colors.mutedForeground} />
       </View>
       
       <Input
@@ -30,7 +33,7 @@ const SearchBar = ({ value, onChangeText, placeholder, className }: SearchBarPro
           className="absolute right-3 z-10 p-1"
           activeOpacity={0.7}
         >
-          <X size={16} className="text-muted-foreground" />
+          <X size={16} color={colors.mutedForeground} />
         </TouchableOpacity>
       )}
     </View>

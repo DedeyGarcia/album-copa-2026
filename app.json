@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/logo-fifa.webp",
     "scheme": "copa-2026",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "primaryColor": "#1E5CFF",
     "backgroundColor": "#ffffff",
@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.dedeygarcia.copa2026",
-      "userInterfaceStyle": "light"
+      "userInterfaceStyle": "automatic"
     },
     "android": {
       "package": "com.dedeygarcia.copa2026",

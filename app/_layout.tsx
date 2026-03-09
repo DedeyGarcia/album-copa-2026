@@ -2,6 +2,7 @@ import '@/global.css';
 
 import * as SplashScreen from 'expo-splash-screen';
 import { Appearance } from 'react-native';
+import { Uniwind } from 'uniwind';
 import { NAV_THEME } from '@/lib/theme';
 import { useStickersStore } from '@/stores/stickers-store';
 import { ThemeProvider } from '@react-navigation/native';
@@ -33,6 +34,7 @@ const RootLayout = () => {
 
   useEffect(() => {
     Appearance.setColorScheme(theme);
+    Uniwind.setTheme(theme);
   }, [theme]);
 
   useEffect(() => {

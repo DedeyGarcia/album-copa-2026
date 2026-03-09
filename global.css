@@ -45,14 +45,14 @@
 
       --color-border: oklch(0.92 0 0);
       --color-input: oklch(0.92 0 0);
-      --color-ring: oklch(0.48 0.28 290); /* Anel de foco roxo */
+      --color-ring: oklch(0.48 0.28 290);
 
-      /* Cores mantidas para charts e sidebars para não quebrar componentes não visuais */
       --color-chart-1: oklch(0.646 0.222 41.116);
       --color-chart-2: oklch(0.6 0.118 184.704);
       --color-chart-3: oklch(0.398 0.07 227.392);
       --color-chart-4: oklch(0.828 0.189 84.429);
       --color-chart-5: oklch(0.769 0.188 70.08);
+
       --color-sidebar: oklch(0.985 0 0);
       --color-sidebar-foreground: oklch(0.145 0 0);
       --color-sidebar-primary: oklch(0.205 0 0);
@@ -68,12 +68,12 @@
       --color-background: oklch(0.28 0.14 270);
       --color-foreground: oklch(1 0 0);
 
-      --color-card: oklch(0.35 0.12 270); /* Um tom um pouco mais claro do azul para cards */
+      --color-card: oklch(0.35 0.12 270);
       --color-card-foreground: oklch(1 0 0);
       --color-popover: oklch(0.35 0.12 270);
       --color-popover-foreground: oklch(1 0 0);
 
-      /* No Dark Mode, usamos o Ciano/Menta (#54FFCC) como primário para dar contraste */
+      /* No Dark Mode, usamos o Ciano/Menta (#54FFCC) como primário */
       --color-primary: oklch(0.88 0.15 170);
       --color-primary-foreground: oklch(0.28 0.14 270);
 
@@ -91,14 +91,14 @@
 
       --color-border: oklch(1 0 0 / 15%);
       --color-input: oklch(1 0 0 / 20%);
-      --color-ring: oklch(0.88 0.15 170); /* Foco Ciano */
+      --color-ring: oklch(0.88 0.15 170);
 
-      /* Cores de charts e sidebars mantidas da estrutura original */
       --color-chart-1: oklch(0.488 0.243 264.376);
       --color-chart-2: oklch(0.696 0.17 162.48);
       --color-chart-3: oklch(0.769 0.188 70.08);
       --color-chart-4: oklch(0.627 0.265 303.9);
       --color-chart-5: oklch(0.645 0.246 16.439);
+
       --color-sidebar: oklch(0.205 0 0);
       --color-sidebar-foreground: oklch(0.985 0 0);
       --color-sidebar-primary: oklch(0.488 0.243 264.376);
