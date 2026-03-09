@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Modal, View, TouchableOpacity, PanResponder, Animated } from 'react-native';
+import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Input } from '@/components/ui/input';
 import { Search, X } from 'lucide-react-native';
@@ -169,11 +170,13 @@ const SectionFilterModal = ({
 
              <View className="mb-4 flex-row items-center justify-between">
                <Text className="text-foreground text-xl font-bold">Filtrar por País / Seção</Text>
-               <TouchableOpacity
+               <Button
+                 variant="ghost"
+                 size="icon"
                  onPress={handleClose}
-              className="bg-muted rounded-full p-2">
-              <X className="text-foreground" size={20} />
-            </TouchableOpacity>
+                 className="bg-muted active:bg-muted/40 rounded-full">
+                 <X className="text-foreground" size={20} />
+               </Button>
           </View>
           
           <View className="relative mb-4 flex-row items-center">
