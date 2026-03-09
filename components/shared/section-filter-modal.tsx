@@ -164,7 +164,6 @@ const SectionFilterModal = ({
           style={{ transform: [{ translateY: panY }] }}
           className="bg-background h-[85%] rounded-t-3xl pb-8 shadow-xl overflow-hidden"
         >
-          {/* Header Draggable Area */}
           <View {...panResponder.panHandlers} className="p-4 pb-0 bg-transparent relative z-10 w-full">
              <View className="w-12 h-1.5 rounded-full bg-border self-center mb-4" />
 
@@ -191,7 +190,6 @@ const SectionFilterModal = ({
           </View>
         </View>
 
-        {/* Content Area */}
         <View className="px-4 flex-1">
           <TouchableOpacity
             className="border-border/50 flex-row items-center border-b py-4 px-2"

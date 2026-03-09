@@ -38,7 +38,7 @@ const StickerCard = ({ sticker, quantity, showDuplicatesQuantity = true, onPress
       >
         <Card 
           className={cn(
-            'aspect-[5/6] flex-col p-0 gap-0 overflow-hidden relative rounded-md border-2',
+            'aspect-5/6 flex-col p-0 gap-0 overflow-hidden relative rounded-md border-2',
             isOwned 
               ? 'bg-primary border-primary shadow-sm' 
               : 'border-transparent'
@@ -47,7 +47,6 @@ const StickerCard = ({ sticker, quantity, showDuplicatesQuantity = true, onPress
         >
           {isOwned ? (
             <>
-              {/* Parte Superior com Bandeira */}
               <View className="w-full flex-1 relative items-center justify-center bg-muted overflow-hidden">
                  {isoCode ? (
                    <Image 
@@ -61,20 +60,17 @@ const StickerCard = ({ sticker, quantity, showDuplicatesQuantity = true, onPress
                    </View>
                  )}
 
-                 {/* Código Superior Esquerdo */}
                  <View className="absolute top-0.5 left-1 z-10 rounded px-0.5 bg-black/30">
                    <Text className="text-[10px] sm:text-[11px] font-bold text-white tracking-tighter">
                      {sticker.code}
                    </Text>
                  </View>
 
-                 {/* Check Central */}
                  <View className="z-10 items-center justify-center">
                    <Check color="#3b82f6" size={28} strokeWidth={4} />
                  </View>
               </View>
 
-              {/* Badge de Repetidas */}
               {quantity > 1 && showDuplicatesQuantity && (
                 <View className="absolute bottom-[20px] right-0.5 bg-primary rounded-full w-[16px] h-[16px] items-center justify-center z-20 shadow-sm border border-background">
                   <Text style={{ color: 'white' }} className="text-[8px] font-bold">
@@ -83,7 +79,6 @@ const StickerCard = ({ sticker, quantity, showDuplicatesQuantity = true, onPress
                 </View>
               )}
 
-              {/* Barra Inferior */}
               <View className="w-full bg-primary items-center justify-center py-[4px] border-t border-primary">
                  <Text className="text-primary-foreground text-[8px] font-bold uppercase tracking-wider">
                    Obtida

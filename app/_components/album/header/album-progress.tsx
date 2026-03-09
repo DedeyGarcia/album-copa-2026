@@ -1,6 +1,5 @@
 import { View } from 'react-native';
 import { Text } from '@/components/ui/text';
-import { Card } from '@/components/ui/card';
 import { useUserStickersStore } from '@/stores/user-stickers-store';
 import { useStickersStore } from '@/stores/stickers-store';
 import { useMemo } from 'react';
@@ -25,30 +24,24 @@ const AlbumProgress = () => {
 
   if (isLoading) {
     return (
-      <Card className="p-4">
-        <View className="mb-2 flex-row items-center justify-between">
-          <Text className="font-semibold">Seu Progresso</Text>
-          <Text className="text-muted-foreground text-sm">Carregando...</Text>
+      <View className="flex-row items-center gap-3">
+        <View className="bg-muted h-2 flex-1 overflow-hidden rounded-full">
+          <View className="bg-primary h-full rounded-full" style={{ width: '0%' }} />
         </View>
-        <View className="bg-muted h-2 w-full overflow-hidden rounded-full">
-          <View className="bg-primary h-full rounded-full" style={{ width: `0%` }} />
-        </View>
-      </Card>
+        <Text className="text-muted-foreground text-xs">…</Text>
+      </View>
     );
   }
 
   return (
-    <Card className="p-4">
-      <View className="mb-2 flex-row items-center justify-between">
-        <Text className="font-semibold">Seu Progresso</Text>
-        <Text className="text-muted-foreground text-sm">
-          {percentage}% ({collected}/{total})
-        </Text>
-      </View>
-      <View className="bg-muted h-2 w-full overflow-hidden rounded-full">
+    <View className="flex-row items-center gap-3">
+      <View className="bg-muted h-2 flex-1 overflow-hidden rounded-full">
         <View className="bg-primary h-full rounded-full" style={{ width: `${percentage}%` }} />
       </View>
-    </Card>
+      <Text className="text-muted-foreground text-xs font-semibold">
+        {percentage}% ({collected}/{total})
+      </Text>
+    </View>
   );
 };
 

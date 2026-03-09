@@ -17,11 +17,9 @@ import { useUserProfileStore } from '@/stores/user-profile-store';
 import GlobalToast from '@/components/shared/global-toast';
 
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
@@ -74,7 +72,6 @@ const RootLayout = () => {
   useEffect(() => {
     const hideSplash = async () => {
       if (!isLoadingAuth) {
-        // Wait a tiny bit to allow the router to stabilize its initial redirect
         await new Promise((resolve) => setTimeout(resolve, 500));
         await SplashScreen.hideAsync();
       }

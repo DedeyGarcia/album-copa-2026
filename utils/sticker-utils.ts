@@ -2,6 +2,10 @@ import { Sticker } from '@/types';
 
 export type ListItem = { type: 'header'; title: string } | { type: 'row'; data: Sticker[] };
 
+/** Strips accents/diacritics and lowercases the string for accent-insensitive comparison */
+const normalize = (str: string) =>
+  str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
 interface GenerateListDataOptions {
   stickers: Sticker[] | null;
   ownedStickers: Map<string, number>;
@@ -21,29 +25,29 @@ export const generateStickerListData = ({
 }: GenerateListDataOptions): ListItem[] => {
   if (!stickers || stickers.length === 0) return [];
 
-  const lowerQuery = searchQuery?.toLowerCase() || '';
+  const normalizedQuery = normalize(searchQuery || '');
 
   const filteredStickers = stickers.filter((sticker) => {
     const ownedQuantity = ownedStickers.get(sticker.code) || 0;
 
-    // Se estamos na tela de duplicadas, a regra é estrita: ter mais de 1.
+
     if (onlyDuplicates) {
       if (ownedQuantity <= 1) return false;
     } else {
-      // Regras de StatusFilter (só na tela normal)
+
       const isOwned = ownedQuantity > 0;
       if (filterBy === 'owned' && !isOwned) return false;
       if (filterBy === 'missing' && isOwned) return false;
     }
 
-    // Filtro de Seção
+
     if (selectedSection && sticker.section !== selectedSection) return false;
 
-    // Filtro de Pesquisa (Texto)
-    if (lowerQuery) {
+
+    if (normalizedQuery) {
       const matchesSearch =
-        sticker.code.toLowerCase().includes(lowerQuery) ||
-        (sticker.name ? sticker.name.toLowerCase().includes(lowerQuery) : false);
+        normalize(sticker.code).includes(normalizedQuery) ||
+        (sticker.name ? normalize(sticker.name).includes(normalizedQuery) : false);
 
       if (!matchesSearch) return false;
     }

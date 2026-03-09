@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Menu } from 'lucide-react-native';
 import SectionFilterModal, { SECTION_MAP } from '@/components/shared/section-filter-modal';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
@@ -30,7 +29,7 @@ const SectionFilter = ({
         {selectedIcon ? (
           <Text className="text-xl">{selectedIcon}</Text>
         ) : (
-          <Menu className="text-foreground" size={20} />
+          <Text className="text-xl">🌎</Text>
         )}
       </Button>
 

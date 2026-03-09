@@ -34,19 +34,28 @@ const StatsScreen = () => {
 
     const totalCopiesCollected = userStickers.reduce((acc, s) => acc + s.quantity, 0);
 
-    const sectionStatsMap: Record<string, { total: number; owned: number }> = {};
+    const teamSectionStatsMap: Record<string, { total: number; owned: number }> = {};
+    const allSectionStatsMap: Record<string, { total: number; owned: number }> = {};
     stickers.forEach((sticker) => {
-      if (NON_TEAM_SECTIONS.has(sticker.section)) return;
-      if (!sectionStatsMap[sticker.section]) {
-        sectionStatsMap[sticker.section] = { total: 0, owned: 0 };
+      if (!allSectionStatsMap[sticker.section]) {
+        allSectionStatsMap[sticker.section] = { total: 0, owned: 0 };
       }
-      sectionStatsMap[sticker.section].total++;
+      allSectionStatsMap[sticker.section].total++;
       if (ownedMap.has(sticker.code)) {
-        sectionStatsMap[sticker.section].owned++;
+        allSectionStatsMap[sticker.section].owned++;
+      }
+
+      if (NON_TEAM_SECTIONS.has(sticker.section)) return;
+      if (!teamSectionStatsMap[sticker.section]) {
+        teamSectionStatsMap[sticker.section] = { total: 0, owned: 0 };
+      }
+      teamSectionStatsMap[sticker.section].total++;
+      if (ownedMap.has(sticker.code)) {
+        teamSectionStatsMap[sticker.section].owned++;
       }
     });
 
-    const teamStats = Object.entries(sectionStatsMap)
+    const teamStats = Object.entries(teamSectionStatsMap)
       .map(([name, { total, owned }]) => ({
         name,
         total,
@@ -56,9 +65,18 @@ const StatsScreen = () => {
       }))
       .sort((a, b) => b.owned - a.owned);
 
+    const allSectionStats = Object.entries(allSectionStatsMap)
+      .map(([name, { total, owned }]) => ({
+        name,
+        total,
+        owned,
+        pct: total > 0 ? owned / total : 0,
+        icon: SECTION_MAP[name]?.icon || '🏳️',
+      }));
+
     const mostOwnedTeam = teamStats[0] ?? null;
     const leastOwnedTeam = teamStats.filter((t) => t.owned > 0).at(-1) ?? null;
-    const top5Missing = [...teamStats]
+    const top5Missing = [...allSectionStats]
       .sort((a, b) => (b.total - b.owned) - (a.total - a.owned))
       .slice(0, 5);
     const mostMissingTeam = top5Missing[0] ?? null;
@@ -227,7 +245,7 @@ const StatsScreen = () => {
         <Card className="bg-muted/40 rounded-2xl px-4 pt-4 pb-4 gap-4 border-0 shadow-none">
           {stats.top5Missing.map((team, index) => {
             const missing = team.total - team.owned;
-            const missingPct = team.total > 0 ? missing / team.total : 0;
+            const ownedPct = team.total > 0 ? team.owned / team.total : 0;
             return (
               <View key={team.name}>
                 <View className="flex-row items-center justify-between mb-1.5">
@@ -246,7 +264,7 @@ const StatsScreen = () => {
                   <View
                     style={{
                       height: 5,
-                      width: `${missingPct * 100}%`,
+                      width: `${ownedPct * 100}%`,
                       borderRadius: 3,
                       backgroundColor: barColors[index],
                     }}
