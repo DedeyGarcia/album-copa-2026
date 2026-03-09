@@ -16,6 +16,7 @@ type UserStickersActions = {
   commitAdd: (stickerCode: string) => Promise<void>;
   commitRemove: (stickerCode: string) => Promise<void>;
   revertRemove: (stickerCode: string, quantity: number) => void;
+  commitRevertRemove: (stickerCode: string, quantity: number) => Promise<void>;
   clearUserStickers: () => void;
   setUserId: (userId: string | null) => void;
 };
@@ -143,7 +144,6 @@ export const useUserStickersStore = create<UserStickersState & UserStickersActio
     const userId = get().userId;
     if (!userId) return;
 
-    const current = get().userStickers;
     const { error } = await supabase
       .from('user_stickers')
       .delete()
@@ -152,8 +152,6 @@ export const useUserStickersStore = create<UserStickersState & UserStickersActio
 
     if (error) {
       console.error('Erro ao efetivar remoção:', error);
-      // Wait, if removal fails, we can't easily revert without knowing the old quantity from the DB.
-      // But typically this shouldn't silent fail anyway.
     }
   },
 
@@ -172,6 +170,20 @@ export const useUserStickersStore = create<UserStickersState & UserStickersActio
           { user_id: userId, sticker_code: stickerCode, quantity, created_at: now, updated_at: now },
         ],
       });
+    }
+  },
+
+  commitRevertRemove: async (stickerCode: string, quantity: number) => {
+    const userId = get().userId;
+    if (!userId) return;
+
+    const { error } = await supabase.from('user_stickers').upsert(
+      { user_id: userId, sticker_code: stickerCode, quantity, updated_at: new Date().toISOString() },
+      { onConflict: 'user_id, sticker_code' }
+    );
+
+    if (error) {
+      console.error('Erro ao reverter remoção no banco:', error);
     }
   },
 }));

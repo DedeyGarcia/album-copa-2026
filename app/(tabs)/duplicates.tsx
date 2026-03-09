@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 import { View } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,14 +15,13 @@ import ManageStickerModal from '@/components/shared/manage-sticker-modal';
 import { useDuplicatesFiltersStore } from '@/stores/duplicates-filters-store';
 import EmptyState from '@/components/shared/empty-state';
 import { generateStickerListData, ListItem } from '@/utils/sticker-utils';
-import { playStickerSound } from '@/utils/sound';
 
 const DuplicatesScreen = () => {
   const { stickers, isLoading: isLoadingStickers } = useStickersStore();
-  const { userStickers, isLoading: isLoadingUserStickers, commitRemove, revertRemove } = useUserStickersStore();
+  const { userStickers, isLoading: isLoadingUserStickers } = useUserStickersStore();
   const { searchQuery, selectedSection } = useDuplicatesFiltersStore();
   const { openModal } = useManageStickerStore();
-  const { showToast, hideToast } = useToastStore();
+  const { hideToast } = useToastStore();
 
   const insets = useSafeAreaInsets();
   const isInitialLoad = (isLoadingStickers || isLoadingUserStickers) && (!stickers || stickers.length === 0);
@@ -47,15 +46,6 @@ const DuplicatesScreen = () => {
     hideToast();
     openModal(sticker, quantity);
   }, [hideToast, openModal]);
-
-  const handleDeleteSuccess = useCallback((code: string, previousQuantity: number) => {
-    playStickerSound();
-    showToast('', 'undo_remove', {
-      code,
-      onTimeout: () => commitRemove(code),
-      onUndo: () => revertRemove(code, previousQuantity),
-    });
-  }, [showToast, commitRemove, revertRemove]);
 
   const renderItem = useCallback(({ item }: { item: ListItem }) => {
     if (item.type === 'header') {
@@ -109,7 +99,7 @@ const DuplicatesScreen = () => {
           />
         )}
       </View>
-      <ManageStickerModal onDeleteSuccess={handleDeleteSuccess} />
+      <ManageStickerModal />
     </View>
   );
 };

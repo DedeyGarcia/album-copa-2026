@@ -20,7 +20,7 @@ import { playStickerSound } from '@/utils/sound';
 const AlbumScreen = () => {
   const { stickers, isLoading: isLoadingStickers } = useStickersStore();
   const { selectedSection, filterBy, searchQuery } = useStickerFiltersStore();
-  const { userStickers, isLoading: isLoadingUserStickers, optimisticAdd, optimisticRemove, commitAdd, commitRemove, revertRemove, upsertSticker } = useUserStickersStore();
+  const { userStickers, isLoading: isLoadingUserStickers, optimisticAdd, optimisticRemove, commitAdd, commitRemove } = useUserStickersStore();
   const { openModal } = useManageStickerStore();
   const { showToast, hideToast } = useToastStore();
 
@@ -50,30 +50,24 @@ const AlbumScreen = () => {
       hideToast();
       playStickerSound();
       optimisticAdd(sticker.code);
+      commitAdd(sticker.code);
       showToast('', 'undo_add', {
         code: sticker.code,
-        onTimeout: () => commitAdd(sticker.code),
-        onUndo: () => optimisticRemove(sticker.code),
+        onUndo: () => {
+          optimisticRemove(sticker.code);
+          commitRemove(sticker.code);
+        },
       });
     } else {
       hideToast();
       openModal(sticker, quantity);
     }
-  }, [hideToast, optimisticAdd, optimisticRemove, commitAdd, openModal, showToast]);
+  }, [hideToast, optimisticAdd, optimisticRemove, commitAdd, commitRemove, openModal, showToast]);
 
   const handleStickerLongPress = useCallback((sticker: Sticker, quantity: number) => {
     hideToast();
     openModal(sticker, quantity);
   }, [hideToast, openModal]);
-
-  const handleDeleteSuccess = useCallback((code: string, previousQuantity: number) => {
-    playStickerSound();
-    showToast('', 'undo_remove', {
-      code,
-      onTimeout: () => commitRemove(code),
-      onUndo: () => revertRemove(code, previousQuantity),
-    });
-  }, [showToast, commitRemove, revertRemove]);
 
   const renderItem = useCallback(({ item }: { item: ListItem }) => {
     if (item.type === 'header') {
@@ -139,7 +133,7 @@ const AlbumScreen = () => {
           />
         )}
       </View>
-      <ManageStickerModal onDeleteSuccess={handleDeleteSuccess} />
+      <ManageStickerModal />
     </View>
   );
 };

@@ -9,14 +9,10 @@ import { Minus, Plus, X } from 'lucide-react-native';
 import StickerCard from './sticker-card';
 import { playStickerSound } from '@/utils/sound';
 
-interface ManageStickerModalProps {
-  onDeleteSuccess?: (code: string, previousQuantity: number) => void;
-}
-
-const ManageStickerModal = ({ onDeleteSuccess }: ManageStickerModalProps) => {
+const ManageStickerModal = () => {
   const { isOpen, selectedSticker, currentQuantity, closeModal } = useManageStickerStore();
-  const { upsertSticker, optimisticRemove } = useUserStickersStore();
-  const { showToast } = useToastStore();
+  const { upsertSticker, optimisticRemove, commitRemove, revertRemove, commitRevertRemove } = useUserStickersStore();
+  const { showToast, hideToast } = useToastStore();
   const [localQuantity, setLocalQuantity] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -43,9 +39,17 @@ const ManageStickerModal = ({ onDeleteSuccess }: ManageStickerModalProps) => {
 
       if (isDeleting) {
         optimisticRemove(selectedSticker.code);
+        commitRemove(selectedSticker.code);
         closeModal();
-        onDeleteSuccess?.(selectedSticker.code, previousQuantity);
-        setIsSaving(false);
+        playStickerSound();
+        hideToast();
+        showToast('', 'undo_remove', {
+          code: selectedSticker.code,
+          onUndo: () => {
+            revertRemove(selectedSticker.code, previousQuantity);
+            commitRevertRemove(selectedSticker.code, previousQuantity);
+          },
+        });
         return;
       }
 
@@ -75,7 +79,6 @@ const ManageStickerModal = ({ onDeleteSuccess }: ManageStickerModalProps) => {
       >
         <TouchableWithoutFeedback>
           <View className="w-full max-w-sm bg-background rounded-2xl overflow-hidden shadow-xl">
-            {/* Header */}
             <View className="flex-row items-center justify-between p-4 border-b border-border/50">
               <Text className="text-xl font-bold">Figurinha: {selectedSticker.code}</Text>
               <TouchableOpacity onPress={closeModal} className="p-2 -mr-2">
@@ -83,7 +86,6 @@ const ManageStickerModal = ({ onDeleteSuccess }: ManageStickerModalProps) => {
               </TouchableOpacity>
             </View>
 
-            {/* Body */}
             <View className="p-6 items-center">
               {selectedSticker.name && (
                  <Text className="text-muted-foreground text-center mb-6">{selectedSticker.name}</Text>
@@ -116,7 +118,6 @@ const ManageStickerModal = ({ onDeleteSuccess }: ManageStickerModalProps) => {
               </View>
             </View>
 
-            {/* Footer */}
             <View className="flex-row items-center border-t border-border/50 p-4 gap-3 bg-muted/20">
               <Button 
                 variant="outline" 

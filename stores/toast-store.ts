@@ -3,7 +3,6 @@ import { create } from 'zustand';
 export type ToastVariant = 'success' | 'error' | 'info' | 'undo_add' | 'undo_remove';
 
 export interface ToastAction {
-  onTimeout: () => void;
   onUndo: () => void;
   code: string;
 }
@@ -22,7 +21,7 @@ interface ToastState {
 
 interface ToastActions {
   showToast: (message: string, variant?: ToastVariant, action?: ToastAction, duration?: number) => void;
-  hideToast: (executeTimeoutCallback?: boolean) => void;
+  hideToast: () => void;
   triggerUndo: () => void;
 }
 
@@ -34,39 +33,23 @@ export const useToastStore = create<ToastState & ToastActions>((set, get) => ({
 
   showToast: (message, variant = 'success', action, duration = 3000) => {
     const currentState = get();
-    if (currentState.toast?.action && currentState.pendingUndoTimeout) {
+    if (currentState.pendingUndoTimeout) {
       clearTimeout(currentState.pendingUndoTimeout);
-      currentState.toast.action.onTimeout();
     }
-    if (!currentState.toast?.action && currentState.pendingUndoTimeout) {
-       clearTimeout(currentState.pendingUndoTimeout);
-    }
-    
+
     const id = ++toastId;
-    
-    let timerRef: ReturnType<typeof setTimeout> | null = null;
-    
-    if (action) {
-       timerRef = setTimeout(() => {
-          action.onTimeout();
-          set((state) => (state.toast?.id === id ? { toast: null, pendingUndoTimeout: null } : state));
-       }, duration);
-    } else {
-       timerRef = setTimeout(() => {
-          set((state) => (state.toast?.id === id ? { toast: null, pendingUndoTimeout: null } : state));
-       }, duration);
-    }
+
+    const timerRef = setTimeout(() => {
+      set((state) => (state.toast?.id === id ? { toast: null, pendingUndoTimeout: null } : state));
+    }, duration);
 
     set({ toast: { id, message, variant, action }, pendingUndoTimeout: timerRef });
   },
 
-  hideToast: (executeTimeoutCallback = true) => {
+  hideToast: () => {
     const currentState = get();
     if (currentState.pendingUndoTimeout) {
       clearTimeout(currentState.pendingUndoTimeout);
-    }
-    if (executeTimeoutCallback && currentState.toast?.action) {
-      currentState.toast.action.onTimeout();
     }
     set({ toast: null, pendingUndoTimeout: null });
   },
@@ -80,5 +63,5 @@ export const useToastStore = create<ToastState & ToastActions>((set, get) => ({
       currentState.toast.action.onUndo();
     }
     set({ toast: null, pendingUndoTimeout: null });
-  }
+  },
 }));
