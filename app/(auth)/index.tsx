@@ -18,7 +18,7 @@ const LoginScreen = () => {
   };
 
   return (
-    <View className="flex-1 items-center justify-center bg-white p-8">
+    <View className="flex-1 items-center justify-center bg-background p-8">
       <View className="mb-12 items-center">
         <Image
           source={require('@/assets/images/logo-fifa.webp')}
@@ -26,7 +26,7 @@ const LoginScreen = () => {
           resizeMode="contain"
         />
         <Text className="text-center text-3xl font-bold">Álbum Copa</Text>
-        <Text className="mt-2 text-center text-gray-500">Complete sua coleção de figurinhas</Text>
+        <Text className="mt-2 text-center text-muted-foreground">Complete sua coleção de figurinhas</Text>
       </View>
       <Button onPress={handleGoogleLogin} className="w-full">
         <Text className="font-semibold">Entrar com Google</Text>
