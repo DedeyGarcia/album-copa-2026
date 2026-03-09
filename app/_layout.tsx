@@ -23,6 +23,9 @@ export {
 
 SplashScreen.preventAutoHideAsync();
 
+// Garantir que o Uniwind inicie no modo claro por padrão
+Uniwind.setTheme('light');
+
 const RootLayout = () => {
   const { fetchStickers } = useStickersStore((state) => state);
   const { fetchUserStickers } = useUserStickersStore((state) => state);
