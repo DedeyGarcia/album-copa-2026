@@ -11,8 +11,9 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/auth-store';
 import { supabase } from '@/lib/supabase/supabase';
-import { useThemeStore } from '@/stores/theme-store';
+import { useUserSettingsStore } from '@/stores/user-settings-store';
 import { useUserStickersStore } from '@/stores/user-stickers-store';
+import { useUserProfileStore } from '@/stores/user-profile-store';
 import GlobalToast from '@/components/shared/global-toast';
 
 export {
@@ -26,7 +27,7 @@ SplashScreen.preventAutoHideAsync();
 const RootLayout = () => {
   const { fetchStickers } = useStickersStore((state) => state);
   const { fetchUserStickers } = useUserStickersStore((state) => state);
-  const { theme } = useThemeStore();
+  const { theme } = useUserSettingsStore();
   const segments = useSegments();
   const router = useRouter();
 
@@ -61,7 +62,10 @@ const RootLayout = () => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      if (session) fetchUserStickers();
+      if (session) {
+        fetchUserStickers();
+        useUserProfileStore.getState().fetchUserProfile();
+      }
     });
 
     return () => subscription.unsubscribe();

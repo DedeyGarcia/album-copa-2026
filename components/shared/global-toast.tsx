@@ -50,7 +50,6 @@ const GlobalToast = () => {
   useEffect(() => {
     if (isVisible) {
       setLastToast(toast);
-      // Popup animation
       if (toast.action) {
          progressWidth.setValue(100);
       }
@@ -63,7 +62,6 @@ const GlobalToast = () => {
          Animated.timing(progressWidth, { toValue: 0, duration: 4000, useNativeDriver: false }).start();
       }
     } else {
-      // Exit animation
       Animated.parallel([
         Animated.timing(translateY, { toValue: 100, duration: 250, useNativeDriver: true }),
         Animated.timing(opacity, { toValue: 0, duration: 200, useNativeDriver: true }),

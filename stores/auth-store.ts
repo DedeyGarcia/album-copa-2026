@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase/supabase';
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
 import { useUserStickersStore } from './user-stickers-store';
+import { useUserProfileStore } from './user-profile-store';
 
 type AuthState = {
   session: Session | null;
@@ -19,7 +20,10 @@ type AuthActions = {
 export const useAuthStore = create<AuthState & AuthActions>((set) => ({
   session: null,
   isLoadingAuth: true,
-  setSession: (session) => set({ session, isLoadingAuth: false }),
+  setSession: (session) => {
+    set({ session, isLoadingAuth: false });
+    useUserStickersStore.getState().setUserId(session?.user?.id || null);
+  },
   signInWithGoogle: async () => {
     try {
       const redirectUrl = Linking.createURL('/');
@@ -61,5 +65,6 @@ export const useAuthStore = create<AuthState & AuthActions>((set) => ({
     if (error) throw error;
     
     useUserStickersStore.getState().clearUserStickers();
+    useUserProfileStore.getState().clearUserProfile();
   },
 }));

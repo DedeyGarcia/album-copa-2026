@@ -1,11 +1,11 @@
 import { supabase } from '@/lib/supabase/supabase';
 import { UserSticker } from '@/types';
 import { create } from 'zustand/react';
-import { useAuthStore } from './auth-store';
 
 type UserStickersState = {
   userStickers: UserSticker[];
   isLoading: boolean;
+  userId: string | null;
 };
 
 type UserStickersActions = {
@@ -17,11 +17,13 @@ type UserStickersActions = {
   commitRemove: (stickerCode: string) => Promise<void>;
   revertRemove: (stickerCode: string, quantity: number) => void;
   clearUserStickers: () => void;
+  setUserId: (userId: string | null) => void;
 };
 
 const initialState: UserStickersState = {
   userStickers: [],
   isLoading: false,
+  userId: null,
 };
 
 export const useUserStickersStore = create<UserStickersState & UserStickersActions>((set, get) => ({
@@ -29,11 +31,12 @@ export const useUserStickersStore = create<UserStickersState & UserStickersActio
 
   clearUserStickers: () => set(initialState),
 
+  setUserId: (userId: string | null) => set({ userId }),
+
   fetchUserStickers: async () => {
     set({ isLoading: true });
 
-    const session = useAuthStore.getState().session;
-    const userId = session?.user?.id;
+    const userId = get().userId;
 
     if (!userId) {
       console.error('Fetch abortado: Sessão não encontrada na AuthStore');
@@ -51,8 +54,7 @@ export const useUserStickersStore = create<UserStickersState & UserStickersActio
   },
 
   upsertSticker: async (stickerCode: string, quantity: number) => {
-    const session = useAuthStore.getState().session;
-    const userId = session?.user?.id;
+    const userId = get().userId;
     if (!userId) return;
 
     const current = get().userStickers;
@@ -99,8 +101,7 @@ export const useUserStickersStore = create<UserStickersState & UserStickersActio
   },
 
   optimisticAdd: (stickerCode: string) => {
-    const session = useAuthStore.getState().session;
-    const userId = session?.user?.id;
+    const userId = get().userId;
     if (!userId) return;
 
     const current = get().userStickers;
@@ -122,8 +123,7 @@ export const useUserStickersStore = create<UserStickersState & UserStickersActio
   },
 
   commitAdd: async (stickerCode: string) => {
-    const session = useAuthStore.getState().session;
-    const userId = session?.user?.id;
+    const userId = get().userId;
     if (!userId) return;
 
     const current = get().userStickers;
@@ -140,8 +140,7 @@ export const useUserStickersStore = create<UserStickersState & UserStickersActio
   },
 
   commitRemove: async (stickerCode: string) => {
-    const session = useAuthStore.getState().session;
-    const userId = session?.user?.id;
+    const userId = get().userId;
     if (!userId) return;
 
     const current = get().userStickers;
@@ -159,8 +158,7 @@ export const useUserStickersStore = create<UserStickersState & UserStickersActio
   },
 
   revertRemove: (stickerCode: string, quantity: number) => {
-    const session = useAuthStore.getState().session;
-    const userId = session?.user?.id;
+    const userId = get().userId;
     if (!userId) return;
 
     const current = get().userStickers;

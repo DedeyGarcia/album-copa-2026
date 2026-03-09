@@ -33,7 +33,6 @@ export const useToastStore = create<ToastState & ToastActions>((set, get) => ({
   pendingUndoTimeout: null,
 
   showToast: (message, variant = 'success', action, duration = 3000) => {
-    // Se havia uma ação de desfazer pendente que está sendo sobrescrita, chame o timeout dela
     const currentState = get();
     if (currentState.toast?.action && currentState.pendingUndoTimeout) {
       clearTimeout(currentState.pendingUndoTimeout);

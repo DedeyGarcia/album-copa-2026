@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { LayoutDashboard, UserCircle } from 'lucide-react-native'; // Ou seus ícones de preferência
+import { LayoutDashboard, UserCircle, Settings } from 'lucide-react-native';
 
 const TabLayout = () => {
   return (
@@ -16,6 +16,13 @@ const TabLayout = () => {
         options={{
           title: 'Repetidas',
           tabBarIcon: ({ color }) => <UserCircle color={color} size={24} />,
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Ajustes',
+          tabBarIcon: ({ color }) => <Settings color={color} size={24} />,
         }}
       />
     </Tabs>
